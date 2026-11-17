@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitHub Pages 示例页</title>
+  <meta name="description" content="一个最小可运行的静态站点，用于验证 GitHub Pages 部署链路。" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --text: #1a1d23;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --accent: #2563eb;
+      --accent-soft: #eff4ff;
+    }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                   "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    header { padding: 72px 0 40px; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .01em;
+    }
+
+    .badge::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, .15);
+    }
+
+    h1 {
+      margin: 20px 0 14px;
+      font-size: clamp(30px, 6vw, 44px);
+      line-height: 1.25;
+      letter-spacing: -.02em;
+      font-weight: 700;
+    }
+
+    .lead {
+      margin: 0;
+      font-size: clamp(15px, 2.4vw, 17px);
+      color: var(--muted);
+      max-width: 46em;
+    }
+
+    main { flex: 1; padding-bottom: 64px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 26px 28px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, .04);
+    }
+
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    ol { margin: 0; padding-left: 20px; }
+    ol li { margin-bottom: 10px; }
+    ol li:last-child { margin-bottom: 0; }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .88em;
+      background: #f3f4f6;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      padding: 1.5px 6px;
+      white-space: nowrap;
+    }
+
+    pre {
+      margin: 12px 0 0;
+      padding: 14px 16px;
+      background: #1a1d23;
+      color: #e5e7eb;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    pre code {
+      background: none;
+      border: 0;
+      padding: 0;
+      color: inherit;
+      white-space: pre;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      padding: 11px 22px;
+      border-radius: 9px;
+      background: var(--text);
+      color: #fff;
+      font-size: 14.5px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform .15s ease, opacity .15s ease;
+    }
+
+    .btn:hover { opacity: .86; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .muted { color: var(--muted); font-size: 14px; }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 22px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 480px) {
+      header { padding: 48px 0 28px; }
+      .card { padding: 20px; border-radius: 12px; }
+      .wrap { padding: 0 18px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <span class="badge">已部署成功</span>
+      <h1>GitHub Pages 跑通了</h1>
+      <p class="lead">
+        这是一个最小可运行的静态站点：纯 HTML + 内联样式，零依赖、零构建。
+        能看到这一页，说明仓库、分支和 Pages 设置都已经正确。
+      </p>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <section class="card">
+        <h2>下一步可以做什么</h2>
+        <ol>
+          <li>把 <code>index.html</code> 的内容换成你真正想放的页面。</li>
+          <li>需要多页就在同目录新建 <code>about.html</code>，用相对链接互跳。</li>
+          <li>要自定义域名，在仓库 <em>Settings → Pages</em> 里填域名并配置 DNS 记录。</li>
+          <li>每次 <code>git push</code> 后，Pages 会自动重新发布，通常 30 秒内生效。</li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <h2>本地预览</h2>
+        <p class="muted" style="margin:0">直接双击打开这个文件即可；或用任意静态服务器：</p>
+        <pre><code>python -m http.server 8000
+# 然后访问 http://localhost:8000</code></pre>
+      </section>
+
+      <section class="card">
+        <h2>仓库</h2>
+        <p class="muted" style="margin:0 0 4px">部署完成后，把下面的链接换成你的实际地址。</p>
+        <a class="btn" href="https://github.com" target="_blank" rel="noopener noreferrer">
+          查看 GitHub 仓库
+        </a>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      Powered by GitHub Pages · 静态站点示例
+    </div>
+  </footer>
+</body>
+</html>
