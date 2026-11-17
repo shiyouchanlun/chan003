@@ -2,6 +2,9 @@
 
 纯 HTML + 内联 CSS，零依赖、零构建，推上去即可访问。
 
+- 仓库：https://github.com/shiyouchanlun/chan003
+- 站点地址：https://shiyouchanlun.github.io/chan003/
+
 ## 文件说明
 
 | 文件 | 作用 |
@@ -20,16 +23,7 @@
 
 ## 部署方式二：本地 git 推送（后续更新用这个）
 
-```bash
-# 在项目目录下，替换 <用户名> 和 <仓库名>
-git remote add origin https://github.com/<用户名>/<仓库名>.git
-git branch -M main
-git push -u origin main
-```
-
-首次推送会弹出浏览器登录 GitHub 授权，授权一次后 Windows 凭据管理器会记住。
-
-之后每次改完页面：
+远程已配置完成，日常只需三条命令：
 
 ```bash
 git add -A
@@ -37,7 +31,15 @@ git commit -m "update page"
 git push
 ```
 
-Pages 会自动重新构建，一般 30 秒内生效。
+如需在另一台机器上重新接入：
+
+```bash
+git remote add origin https://github.com/shiyouchanlun/chan003.git
+git branch -M main
+git push -u origin main
+```
+
+首次推送会弹出浏览器登录 GitHub 授权，授权一次后 Windows 凭据管理器会记住。
 
 ## 访问地址规则
 
