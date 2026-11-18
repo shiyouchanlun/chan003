@@ -1,0 +1,305 @@
+---
+import CtaWechat from '../components/CtaWechat.astro';
+import { site, wechat } from '../data/site';
+import { formatDate } from '../lib/format';
+import { getGroupQrState } from '../lib/groupQr';
+import { assetUrl } from '../lib/url';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+/**
+ * 社群页 —— 全站唯一同时承担「转化 + 关于 + 群规 + 免责声明」的页面。
+ * 所以它不能加 noindex：它既是转化落点，也是站点的门面说明。
+ *
+ * 群码只在全站这一处出现，且超过 7 天会被构建期自动隐藏。
+ */
+
+const qr = getGroupQrState();
+
+const rules = [
+  '不荐股、不喊单、不提供买卖指令。这里只讨论结构、级别和逻辑推演。',
+  '不发广告、不拉人、不发任何形式的外部链接。',
+  '可以贴自己的画线图求指点，请说明标的、周期和你判断的级别。',
+  '亏损不追责于群友。任何人的判断都可能错，包括你我。',
+];
+---
+
+<BaseLayout
+  title="社群"
+  description={`加入「${site.name}」交流群：每个交易日一起做收盘复盘，讨论缠论结构与级别。不荐股、不喊单、不收费。`}
+  canonicalPath="/community/"
+>
+  <div class="community">
+    <div class="container container--narrow">
+      <header class="page-head">
+        <p class="eyebrow">社群 · 关于本站</p>
+        <h1 class="page-title">一个人复盘容易走偏</h1>
+        <p class="page-lead">
+          这里是一个 A 股散户的缠论学习角落。每天收盘后写一份结构复盘，
+          把当天的级别、中枢和观察点记录下来；每周陆续整理成体系的图解笔记。
+          不预测点位，只记录结构——因为能写清楚失效条件的判断，才是判断。
+        </p>
+      </header>
+
+      <!-- 主 CTA：公众号（长期有效，不受群码过期影响） -->
+      <section class="block" aria-labelledby="wechat-title">
+        <h2 class="block-title" id="wechat-title">先关注公众号</h2>
+        <p class="block-desc">
+          复盘会在这里沉淀，也会在公众号推送一份。公众号是群码失效时唯一的兜底路径，
+          所以它是主入口而不是备选。
+        </p>
+        <CtaWechat />
+      </section>
+
+      <!-- 群码：次位，且可能因过期自动隐藏 -->
+      <section class="block" aria-labelledby="group-title">
+        <h2 class="block-title" id="group-title">加入微信交流群</h2>
+
+        {
+          qr.status === 'fresh' ? (
+            <div class="qr-block">
+              <img
+                src={assetUrl('/images/wechat/group-qr.png')}
+                alt="十优缠论微信交流群二维码"
+                width="180"
+                height="180"
+                loading="lazy"
+                decoding="async"
+              />
+              <p class="qr-note">
+                二维码更新于 {formatDate(qr.updatedAt)}。如已失效，请关注公众号回复「{wechat.keywords.group}」获取最新的入群方式。
+              </p>
+            </div>
+          ) : (
+            <div class="qr-fallback">
+              <p>
+                群二维码当前不展示（有效期很短，长期挂一张过期图对谁都没用）。
+                关注公众号「{wechat.name}」，回复「<strong>{wechat.keywords.group}</strong>」即可获取最新的入群方式。
+              </p>
+            </div>
+          )
+        }
+
+        <ul class="rules">
+          {rules.map((rule) => <li>{rule}</li>)}
+        </ul>
+        <p class="rules-note">
+          群规是为了把群留给真正想学的人。如果你要的是明确的买卖指令，这个群不适合你。
+        </p>
+      </section>
+
+      <!-- 关于本站 -->
+      <section class="block" aria-labelledby="about-title">
+        <h2 class="block-title" id="about-title">关于本站</h2>
+        <p class="block-desc">
+          「{site.name}」是一个纯静态的内容站点：没有账号体系、没有付费墙、没有评论区，
+          也不收集任何个人信息。讨论发生在微信群里，内容沉淀在这里。
+        </p>
+        <dl class="fact-list">
+          <div>
+            <dt>更新节奏</dt>
+            <dd>每交易日一份收盘复盘；缠论笔记每周 1–2 篇；消息解读按当日情况。</dd>
+          </div>
+          <div>
+            <dt>内容边界</dt>
+            <dd>只做技术结构分析，不提供投资建议、不推荐标的、不承诺收益。</dd>
+          </div>
+          <div>
+            <dt>源码</dt>
+            <dd>
+              <a href={site.repoUrl} rel="noopener noreferrer" target="_blank">{site.repoUrl.replace('https://', '')}</a>
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- 免责声明：全站常驻短版在页脚，这里是完整版 -->
+      <section class="block" id="disclaimer" aria-labelledby="disclaimer-title">
+        <h2 class="block-title" id="disclaimer-title">免责声明</h2>
+        <div class="legal">
+          <p>
+            本站所有内容均为缠论技术分析方法的学习与交流记录，<strong>不构成任何投资建议</strong>，
+            亦不涉及具体操作指导。文中提及的任何个股、指数、板块，仅用于说明技术结构的形态与级别归属，
+            <strong>不构成推荐</strong>，也不代表本人持有或建议持有。
+          </p>
+          <p>
+            技术分析存在固有局限，任何结构判断都可能失效。文中给出的「失效条件」正是为此而写——
+            当条件被触发时，原有判断即作废。市场有风险，投资决策需独立判断并自负其责。
+          </p>
+          <p>
+            本站不提供代客理财、不代客操作、不收取任何费用、不开展任何形式的荐股或带单业务。
+          </p>
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .community {
+    padding: var(--s-6) 0 var(--s-8);
+  }
+
+  .page-head {
+    padding-bottom: var(--s-5);
+    border-bottom: 1px solid var(--line-1);
+  }
+
+  .eyebrow {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--brand);
+    margin-bottom: var(--s-2);
+  }
+
+  .page-title {
+    font-size: 28px;
+    line-height: 1.35;
+  }
+
+  .page-lead {
+    margin-top: var(--s-3);
+    font-size: 15.5px;
+    line-height: 1.85;
+    color: var(--text-2);
+  }
+
+  .block {
+    margin-top: var(--s-7);
+  }
+
+  .block-title {
+    font-size: var(--fs-h3);
+    padding-left: 11px;
+    position: relative;
+    margin-bottom: var(--s-3);
+  }
+
+  .block-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 16px;
+    background: var(--brand);
+    border-radius: 2px;
+  }
+
+  .block-desc {
+    font-size: var(--fs-sm);
+    line-height: 1.8;
+    color: var(--text-2);
+    margin-bottom: var(--s-4);
+  }
+
+  .qr-block {
+    display: grid;
+    justify-items: center;
+    gap: var(--s-3);
+    background: var(--surface);
+    border: 1px solid var(--line-1);
+    border-radius: var(--r-md);
+    padding: var(--s-5);
+  }
+
+  .qr-block img {
+    width: 180px;
+    height: 180px;
+    background: #fff;
+    border-radius: var(--r-sm);
+  }
+
+  .qr-note {
+    font-size: var(--fs-xs);
+    line-height: 1.7;
+    color: var(--text-3);
+    text-align: center;
+  }
+
+  .qr-fallback {
+    background: var(--surface-2);
+    border: 1px dashed var(--line-2);
+    border-radius: var(--r-md);
+    padding: var(--s-4) var(--s-5);
+  }
+
+  .qr-fallback p {
+    font-size: var(--fs-sm);
+    line-height: 1.8;
+    color: var(--text-2);
+  }
+
+  .rules {
+    margin-top: var(--s-4);
+    padding-left: 1.2em;
+    display: grid;
+    gap: var(--s-2);
+    font-size: var(--fs-sm);
+    line-height: 1.75;
+    color: var(--text-2);
+  }
+
+  .rules li::marker {
+    color: var(--brand);
+  }
+
+  .rules-note {
+    margin-top: var(--s-3);
+    font-size: var(--fs-xs);
+    line-height: 1.7;
+    color: var(--text-3);
+  }
+
+  .fact-list {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+  }
+
+  .fact-list > div {
+    display: grid;
+    gap: 2px;
+    padding: var(--s-3) 0;
+    border-bottom: 1px solid var(--line-1);
+  }
+
+  .fact-list dt {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--text-3);
+  }
+
+  .fact-list dd {
+    margin: 0;
+    font-size: var(--fs-sm);
+    line-height: 1.75;
+    color: var(--text-1);
+  }
+
+  .legal {
+    display: grid;
+    gap: var(--s-3);
+    padding: var(--s-4) var(--s-5);
+    background: var(--surface-2);
+    border-left: 3px solid var(--line-2);
+    font-size: var(--fs-xs);
+    line-height: 1.85;
+    color: var(--text-3);
+  }
+
+  .legal strong {
+    color: var(--text-2);
+    font-weight: 600;
+  }
+
+  @media (min-width: 768px) {
+    .community {
+      padding: var(--s-7) 0 var(--s-9);
+    }
+
+    .page-title {
+      font-size: 32px;
+    }
+  }
+</style>

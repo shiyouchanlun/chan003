@@ -1,0 +1,529 @@
+---
+import CtaWechat from '../components/CtaWechat.astro';
+import PostCard from '../components/PostCard.astro';
+import { sections, site } from '../data/site';
+import { seriesDefs } from '../data/series';
+import { formatDate, readingMinutes } from '../lib/format';
+import {
+  getBySection,
+  getSeriesPosts,
+  getStructureCases,
+  postUrl,
+  refOf,
+  sectionUrl,
+  slugOf,
+} from '../lib/posts';
+import { withBase } from '../lib/url';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const [reviews, news, learn, structureCases] = await Promise.all([
+  getBySection('review'),
+  getBySection('news'),
+  getBySection('learn'),
+  getStructureCases(),
+]);
+
+const lead = reviews[0] ?? learn[0] ?? null;
+const recentReviews = reviews.filter((p) => slugOf(p) !== (lead ? slugOf(lead) : '')).slice(0, 3);
+const recentNews = news.slice(0, 3);
+
+/** 系列卡片：每个系列算篇数与最新一讲，用于首页「知识体系」区块 */
+const seriesCards = await Promise.all(
+  seriesDefs.map(async (def) => {
+    const posts = await getSeriesPosts(def.slug);
+    return {
+      ...def,
+      count: posts.length,
+      latest: posts[0] ?? null,
+    };
+  })
+);
+
+/** 入门入口卡：第一个有内容的系列 */
+const entrySeries = seriesCards.find((s) => s.count > 0) ?? null;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: site.title,
+  description: site.description,
+  url: site.origin,
+};
+---
+
+<BaseLayout title={site.title} description={site.description} jsonLd={jsonLd}>
+  <!-- ── 首屏：今日复盘为主角，右侧是入门入口 ── -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-main">
+        {
+          lead ? (
+            <PostCard post={lead} lead />
+          ) : (
+            <p class="empty">
+              还没有文章。用 <code>npm run new review "标题"</code> 创建第一篇。
+            </p>
+          )
+        }
+      </div>
+
+      <aside class="hero-side" aria-label="缠论入门">
+        {
+          entrySeries && entrySeries.latest ? (
+            <div class="entry-card">
+              <p class="entry-eyebrow">缠论入门 · 系列连载</p>
+              <h2 class="entry-title">
+                <a href={postUrl(refOf(entrySeries.latest))}>{entrySeries.latest.data.title}</a>
+              </h2>
+              <p class="entry-desc">{entrySeries.desc}</p>
+              <div class="entry-progress">
+                <span class="entry-count">
+                  已更新 {entrySeries.count} 讲
+                </span>
+                <a class="entry-link" href={postUrl(refOf(entrySeries.latest))}>从这一讲开始 →</a>
+              </div>
+            </div>
+          ) : (
+            <div class="entry-card entry-card--empty">
+              <p class="entry-eyebrow">缠论入门</p>
+              <p class="entry-desc">系列内容准备中。</p>
+            </div>
+          )
+        }
+      </aside>
+    </div>
+  </section>
+
+  <!-- ── 每日复盘 ── -->
+  <section class="block">
+    <div class="container">
+      <div class="section-title">
+        <h2>{sections.review.name}</h2>
+        <a class="more" href={sectionUrl('review')}>全部 →</a>
+      </div>
+
+      {
+        recentReviews.length > 0 ? (
+          <ul class="block-list">
+            {recentReviews.map((post) => (
+              <li>
+                <a class="block-item" href={postUrl(refOf(post))}>
+                  <div class="block-item-head">
+                    <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+                    <span aria-hidden="true">·</span>
+                    <span>约 {readingMinutes(post.body ?? '')} 分钟</span>
+                  </div>
+                  <h3 class="block-item-title">{post.data.title}</h3>
+                  <p class="block-item-desc">{post.data.description}</p>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="empty">暂无复盘内容。</p>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- ── 缠论知识体系 ── -->
+  <section class="block">
+    <div class="container">
+      <div class="section-title">
+        <h2>{sections.learn.name}</h2>
+        <a class="more" href={sectionUrl('learn')}>全部 →</a>
+      </div>
+
+      <ul class="series-grid">
+        {
+          seriesCards.map((card) => (
+            <li class="series-card">
+              {card.count > 0 ? (
+                <a class="series-card-link" href={withBase(`/learn/series/${card.slug}/`)}>
+                  <h3 class="series-card-title">{card.name}</h3>
+                  <p class="series-card-desc">{card.desc}</p>
+                  <span class="series-card-meta">{card.count} 讲</span>
+                </a>
+              ) : (
+                /* 0 篇的系列不生成页面，所以不能渲染链接——否则是死链 */
+                <div class="series-card-link series-card-link--pending">
+                  <h3 class="series-card-title">{card.name}</h3>
+                  <p class="series-card-desc">{card.desc}</p>
+                  <span class="series-card-meta">筹备中</span>
+                </div>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── 消息解读 + 结构案例 ── -->
+  <section class="block">
+    <div class="container two-col">
+      <div class="panel">
+        <div class="panel-head">
+          <h2 class="panel-title">{sections.news.name}</h2>
+          <a class="more" href={sectionUrl('news')}>全部 →</a>
+        </div>
+        {
+          recentNews.length > 0 ? (
+            <ul class="mini-list">
+              {recentNews.map((post) => (
+                <li>
+                  <a href={postUrl(refOf(post))}>
+                    <span class="mini-title">{post.data.title}</span>
+                    <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="panel-empty">暂无内容。</p>
+          )
+        }
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2 class="panel-title panel-title--brand">结构案例</h2>
+        </div>
+        <p class="panel-sub">复盘中的个股结构拆解</p>
+        {
+          structureCases.length > 0 ? (
+            <ul class="mini-list">
+              {structureCases.map((post) => (
+                <li>
+                  <a href={postUrl(refOf(post))}>
+                    <span class="mini-title">{post.data.title}</span>
+                    <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            /* 少于 3 篇整栏说明文字也不渲染，避免一个空壳标题占位 */
+            <p class="panel-empty">这类内容积累 3 篇后开放。</p>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="container">
+      <CtaWechat />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ── 首屏 ── */
+  .hero {
+    padding: var(--s-6) 0 0;
+  }
+
+  .hero-grid {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  .hero-side {
+    display: grid;
+  }
+
+  .entry-card {
+    background: var(--ink-900);
+    color: var(--ink-text);
+    border-radius: var(--r-md);
+    padding: var(--s-5);
+    display: grid;
+    align-content: start;
+    gap: var(--s-3);
+  }
+
+  .entry-eyebrow {
+    font-size: var(--fs-xs);
+    color: var(--ink-text-3);
+    letter-spacing: 0.04em;
+  }
+
+  .entry-title {
+    font-size: 19px;
+    line-height: 1.45;
+  }
+
+  .entry-title a {
+    color: #fff;
+  }
+
+  .entry-title a:hover {
+    color: #fff;
+    text-decoration: none;
+    opacity: 0.85;
+  }
+
+  .entry-desc {
+    font-size: var(--fs-sm);
+    line-height: 1.7;
+    color: var(--ink-text-2);
+  }
+
+  .entry-progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    padding-top: var(--s-3);
+    border-top: 1px solid var(--ink-line);
+    font-size: var(--fs-xs);
+    color: var(--ink-text-3);
+  }
+
+  .entry-link {
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .entry-link:hover {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  /* ── 区块 ── */
+  .block {
+    padding: var(--s-7) 0 0;
+  }
+
+  .block-list {
+    list-style: none;
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .block-item {
+    display: block;
+    padding: var(--s-4) var(--s-5);
+    background: var(--surface);
+    border: 1px solid var(--line-1);
+    border-radius: var(--r-md);
+    color: inherit;
+  }
+
+  .block-item:hover {
+    border-color: var(--line-2);
+    text-decoration: none;
+  }
+
+  .block-item-head {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-size: var(--fs-xs);
+    color: var(--text-3);
+    margin-bottom: 6px;
+  }
+
+  .block-item-title {
+    font-size: var(--fs-h3);
+    line-height: 1.45;
+    color: var(--text-1);
+  }
+
+  .block-item:hover .block-item-title {
+    color: var(--navy);
+  }
+
+  .block-item-desc {
+    margin-top: 6px;
+    font-size: var(--fs-sm);
+    line-height: 1.7;
+    color: var(--text-2);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ── 系列卡 ── */
+  .series-grid {
+    list-style: none;
+    display: grid;
+    gap: var(--s-3);
+    grid-template-columns: 1fr;
+  }
+
+  .series-card {
+    background: var(--surface);
+    border: 1px solid var(--line-1);
+    border-radius: var(--r-md);
+  }
+
+  .series-card-link {
+    display: grid;
+    gap: var(--s-2);
+    padding: var(--s-4) var(--s-5);
+    color: inherit;
+    height: 100%;
+    align-content: start;
+  }
+
+  .series-card-link:hover {
+    text-decoration: none;
+    border-radius: var(--r-md);
+    background: var(--surface-2);
+  }
+
+  /* 0 篇的系列：保留分类信号，但不可点击 */
+  .series-card-link--pending {
+    opacity: 0.72;
+  }
+
+  .series-card-title {
+    font-size: var(--fs-h3);
+  }
+
+  .series-card-link:hover .series-card-title {
+    color: var(--navy);
+  }
+
+  .series-card-desc {
+    font-size: var(--fs-sm);
+    line-height: 1.7;
+    color: var(--text-2);
+  }
+
+  .series-card-meta {
+    font-size: var(--fs-xs);
+    color: var(--text-3);
+  }
+
+  /* ── 双栏 ── */
+  .two-col {
+    display: grid;
+    gap: var(--s-5);
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line-1);
+    border-radius: var(--r-md);
+    padding: var(--s-5);
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-3);
+    margin-bottom: var(--s-3);
+  }
+
+  .panel-title {
+    font-size: var(--fs-h3);
+    position: relative;
+    padding-left: 10px;
+  }
+
+  .panel-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 15px;
+    background: var(--line-2);
+    border-radius: 2px;
+  }
+
+  .panel-title--brand::before {
+    background: var(--brand);
+  }
+
+  .panel-sub {
+    font-size: var(--fs-xs);
+    color: var(--text-3);
+    margin: -6px 0 var(--s-3);
+  }
+
+  .panel-empty {
+    font-size: var(--fs-sm);
+    color: var(--text-3);
+  }
+
+  .mini-list {
+    list-style: none;
+    display: grid;
+    gap: 2px;
+  }
+
+  .mini-list a {
+    display: grid;
+    gap: 4px;
+    padding: var(--s-2) 0;
+    border-bottom: 1px dashed var(--line-1);
+    color: inherit;
+  }
+
+  .mini-list li:last-child a {
+    border-bottom: 0;
+  }
+
+  .mini-list a:hover {
+    text-decoration: none;
+  }
+
+  .mini-list a:hover .mini-title {
+    color: var(--navy);
+  }
+
+  .mini-title {
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--text-1);
+  }
+
+  .mini-list time {
+    font-size: var(--fs-xs);
+    color: var(--text-3);
+  }
+
+  .more {
+    font-size: var(--fs-sm);
+    color: var(--text-3);
+  }
+
+  .more:hover {
+    color: var(--navy);
+  }
+
+  /* ── 响应式 ── */
+  @media (min-width: 768px) {
+    .hero {
+      padding-top: var(--s-7);
+    }
+
+    .hero-grid {
+      grid-template-columns: 1.9fr 1fr;
+      gap: var(--s-4);
+      align-items: stretch;
+    }
+
+    .series-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .two-col {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--s-4);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .block {
+      padding-top: var(--s-8);
+    }
+  }
+</style>

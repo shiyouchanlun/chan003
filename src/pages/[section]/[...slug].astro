@@ -1,0 +1,30 @@
+---
+import { render } from 'astro:content';
+
+import { getAllPosts, slugOf } from '../../lib/posts';
+import PostLayout from '../../layouts/PostLayout.astro';
+
+/**
+ * 文章详情页 —— 三个栏目共用同一套模板。
+ * 栏目差异由 PostLayout 按 section 条件渲染，不为单个栏目新建布局。
+ */
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+
+  return posts.map((post) => ({
+    params: {
+      section: post.data.section,
+      slug: slugOf(post),
+    },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+---
+
+<PostLayout post={post} headings={headings}>
+  <Content />
+</PostLayout>

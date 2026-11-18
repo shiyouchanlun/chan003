@@ -1,0 +1,161 @@
+---
+import { footerNav, sections, site, wechat } from '../data/site';
+import { withBase } from '../lib/url';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <span class="footer-mark" aria-hidden="true">缠</span>
+          <span>{site.name}</span>
+        </div>
+        <p class="footer-desc">
+          缠论结构 · 每日复盘 · 一起看图
+        </p>
+      </div>
+
+      <nav class="footer-col" aria-label="内容栏目">
+        <h2 class="footer-title">内容</h2>
+        <ul>
+          {
+            Object.values(sections).map((s) => (
+              <li>
+                <a href={withBase(s.path)}>{s.name}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav class="footer-col" aria-label="站点信息">
+        <h2 class="footer-title">站点</h2>
+        <ul>
+          {
+            footerNav.map((item) => (
+              <li>
+                <a href={withBase(item.href)}>{item.text}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="footer-col">
+        <h2 class="footer-title">公众号</h2>
+        <ul>
+          <li class="footer-muted">{wechat.name}</li>
+          <li class="footer-muted">回复「{wechat.keywords.material}」领术语速查表</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-legal">
+      <p>
+        免责声明：本站内容为缠论技术分析方法的学习与交流记录，<strong>不构成任何投资建议</strong>，亦不涉及具体操作指导。
+        文中涉及的个股仅用于说明技术结构，不推荐任何标的。市场有风险，决策需独立判断。
+      </p>
+      <p class="footer-copy">© {year} {site.name}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--ink-950);
+    color: var(--ink-text-3);
+    margin-top: var(--s-9);
+    padding: var(--s-8) 0 var(--s-5);
+    font-size: var(--fs-sm);
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-5);
+    padding-bottom: var(--s-6);
+    border-bottom: 1px solid var(--ink-line);
+  }
+
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ink-text);
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .footer-mark {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--r-sm);
+    background: var(--brand);
+    color: #fff;
+    font-size: 13px;
+  }
+
+  .footer-desc {
+    margin-top: var(--s-3);
+    color: var(--ink-text-3);
+    line-height: 1.7;
+  }
+
+  .footer-title {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--ink-text);
+    letter-spacing: 0.08em;
+    margin-bottom: var(--s-3);
+  }
+
+  .footer-col ul {
+    list-style: none;
+    display: grid;
+    gap: 6px;
+  }
+
+  .footer-col a {
+    color: var(--ink-text-2);
+  }
+
+  .footer-col a:hover {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .footer-muted {
+    color: var(--ink-text-3);
+    line-height: 1.6;
+  }
+
+  .footer-legal {
+    padding-top: var(--s-5);
+    display: grid;
+    gap: var(--s-3);
+    font-size: var(--fs-xs);
+    line-height: 1.75;
+    color: var(--ink-text-3);
+  }
+
+  .footer-legal strong {
+    color: var(--ink-text-2);
+    font-weight: 600;
+  }
+
+  .footer-copy {
+    color: #6a7886;
+  }
+
+  @media (min-width: 600px) {
+    .footer-grid {
+      grid-template-columns: 1.6fr 1fr 1fr 1.2fr;
+      gap: var(--s-6);
+    }
+  }
+</style>

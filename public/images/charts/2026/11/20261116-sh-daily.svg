@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-label="沪指日线中枢内第二次回踩下沿示意图">
+  <rect width="1200" height="675" fill="#ffffff"/>
+
+  <g stroke="#EDEAE4" stroke-width="1">
+    <line x1="80" y1="120" x2="1140" y2="120"/>
+    <line x1="80" y1="220" x2="1140" y2="220"/>
+    <line x1="80" y1="320" x2="1140" y2="320"/>
+    <line x1="80" y1="420" x2="1140" y2="420"/>
+    <line x1="80" y1="520" x2="1140" y2="520"/>
+  </g>
+
+  <g fill="#7A8492" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="16" text-anchor="end">
+    <text x="68" y="126">3450</text>
+    <text x="68" y="226">3420</text>
+    <text x="68" y="326">3390</text>
+    <text x="68" y="426">3360</text>
+    <text x="68" y="526">3330</text>
+  </g>
+
+  <line x1="80" y1="455" x2="1140" y2="455" stroke="#B9B3A8" stroke-width="2" stroke-dasharray="10 8"/>
+  <text x="1046" y="447" fill="#8A8478" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="15">年线</text>
+
+  <rect x="300" y="226" width="620" height="200" fill="#A82C2C" fill-opacity="0.05" stroke="#A82C2C" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="314" y="252" fill="#A82C2C" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="600">日线中枢 3360 — 3420（回踩下沿获支撑）</text>
+
+  <path d="M80 400 L140 356 L190 392 L240 330 L300 366 L350 300 L410 340 L455 268 L505 306 L560 250 L615 292 L665 236 L720 286 L770 246 L820 300 L875 262 L925 318 L980 286 L1030 336 L1075 396 L1110 370"
+        fill="none" stroke="#1D4E7C" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <circle cx="1030" cy="336" r="6" fill="#1B7F58"/>
+  <text x="980" y="322" fill="#1B7F58" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="15">回踩 3368</text>
+
+  <circle cx="1110" cy="370" r="7" fill="#C7382F"/>
+  <text x="1000" y="404" fill="#C7382F" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="16" font-weight="600">收盘 3382</text>
+
+  <g font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#4C5764">
+    <text x="86" y="580">10/28</text>
+    <text x="356" y="580">11/05</text>
+    <text x="690" y="580">11/12</text>
+    <text x="1050" y="580">11/16</text>
+  </g>
+
+  <text x="80" y="632" fill="#7A8492" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="15">示意图：今日下探 3368 后收回中枢内部，下沿支撑有效，量能继续萎缩。</text>
+</svg>

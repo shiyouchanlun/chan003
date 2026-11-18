@@ -1,0 +1,127 @@
+---
+import { seriesDefs } from '../../data/series';
+import { sections } from '../../data/site';
+import { getBySection, getSeriesPosts, type Section } from '../../lib/posts';
+import { withBase } from '../../lib/url';
+import ListLayout from '../../layouts/ListLayout.astro';
+
+export async function getStaticPaths() {
+  return (Object.keys(sections) as Section[]).map((section) => ({
+    params: { section },
+    props: { section },
+  }));
+}
+
+const { section } = Astro.props as { section: Section };
+const meta = sections[section];
+const posts = await getBySection(section);
+
+/** 知识栏目额外展示系列卡片：成体系的内容不能被时间流淹没 */
+const seriesCards =
+  section === 'learn'
+    ? await Promise.all(
+        seriesDefs.map(async (def) => {
+          const list = await getSeriesPosts(def.slug);
+          return { ...def, count: list.length };
+        })
+      )
+    : [];
+---
+
+<ListLayout
+  title={meta.name}
+  description={meta.desc}
+  posts={posts}
+  emptyText={`「${meta.name}」还没有文章，第一篇正在路上。`}
+>
+  {
+    seriesCards.length > 0 && (
+      <section class="series-block" aria-label="系列课程">
+        <ul class="series-grid">
+          {seriesCards.map((card) => (
+            <li class="series-card">
+              {card.count > 0 ? (
+                <a href={withBase(`/learn/series/${card.slug}/`)}>
+                  <h2 class="series-card-title">{card.name}</h2>
+                  <p class="series-card-desc">{card.desc}</p>
+                  <span class="series-card-meta">{card.count} 讲</span>
+                </a>
+              ) : (
+                /* 0 篇的系列不生成页面，只能渲染为纯文本 */
+                <div class="series-card-inert">
+                  <h2 class="series-card-title">{card.name}</h2>
+                  <p class="series-card-desc">{card.desc}</p>
+                  <span class="series-card-meta">筹备中</span>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</ListLayout>
+
+<style>
+  .series-block {
+    margin-bottom: var(--s-6);
+  }
+
+  .series-grid {
+    list-style: none;
+    display: grid;
+    gap: var(--s-3);
+    grid-template-columns: 1fr;
+  }
+
+  .series-card {
+    background: var(--surface);
+    border: 1px solid var(--line-1);
+    border-radius: var(--r-md);
+  }
+
+  .series-card a,
+  .series-card-inert {
+    display: grid;
+    gap: var(--s-2);
+    padding: var(--s-4) var(--s-5);
+    color: inherit;
+    align-content: start;
+    height: 100%;
+  }
+
+  .series-card-inert {
+    opacity: 0.72;
+  }
+
+  .series-card a:hover {
+    text-decoration: none;
+    background: var(--surface-2);
+    border-radius: var(--r-md);
+  }
+
+  .series-card a:hover .series-card-title {
+    color: var(--navy);
+  }
+
+  .series-card-title {
+    font-size: var(--fs-h3);
+  }
+
+  .series-card-desc {
+    font-size: var(--fs-sm);
+    line-height: 1.7;
+    color: var(--text-2);
+  }
+
+  .series-card-meta {
+    font-size: var(--fs-xs);
+    color: var(--text-3);
+  }
+
+  @media (min-width: 768px) {
+    .series-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

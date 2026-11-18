@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-label="沪指日线走势与中枢区间示意图">
+  <rect width="1200" height="675" fill="#ffffff"/>
+
+  <!-- 网格 -->
+  <g stroke="#EDEAE4" stroke-width="1">
+    <line x1="80" y1="120" x2="1140" y2="120"/>
+    <line x1="80" y1="220" x2="1140" y2="220"/>
+    <line x1="80" y1="320" x2="1140" y2="320"/>
+    <line x1="80" y1="420" x2="1140" y2="420"/>
+    <line x1="80" y1="520" x2="1140" y2="520"/>
+  </g>
+
+  <!-- 左侧刻度 -->
+  <g fill="#7A8492" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="16" text-anchor="end">
+    <text x="68" y="126">3450</text>
+    <text x="68" y="226">3420</text>
+    <text x="68" y="326">3390</text>
+    <text x="68" y="426">3360</text>
+    <text x="68" y="526">3330</text>
+  </g>
+
+  <!-- 年线 -->
+  <line x1="80" y1="455" x2="1140" y2="455" stroke="#B9B3A8" stroke-width="2" stroke-dasharray="10 8"/>
+  <text x="1046" y="447" fill="#8A8478" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="15">年线</text>
+
+  <!-- 中枢区间 -->
+  <rect x="300" y="226" width="620" height="200" fill="#A82C2C" fill-opacity="0.05" stroke="#A82C2C" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="314" y="252" fill="#A82C2C" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="600">日线中枢 3360 — 3420（扩张中）</text>
+
+  <!-- 走势 -->
+  <path d="M80 400 L140 356 L190 392 L240 330 L300 366 L350 300 L410 340 L455 268 L505 306 L560 250 L615 292 L665 236 L720 286 L770 246 L820 300 L875 262 L925 318 L980 286 L1030 336 L1080 300 L1140 344"
+        fill="none" stroke="#1D4E7C" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- 标注：今日收盘 -->
+  <circle cx="1140" cy="344" r="7" fill="#C7382F"/>
+  <g font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#C7382F" font-weight="600">
+    <text x="1020" y="382">收盘 3378</text>
+  </g>
+
+  <!-- 关键点位标注 -->
+  <g font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#4C5764">
+    <text x="86" y="580">10/28</text>
+    <text x="356" y="580">11/05</text>
+    <text x="690" y="580">11/12</text>
+    <text x="1076" y="580">11/17</text>
+  </g>
+
+  <!-- 图例 -->
+  <g font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#7A8492">
+    <text x="80" y="632">示意图：横轴为交易日，纵轴为指数点位。红色虚线框为日线级别中枢区间，灰色虚线为年线位置。</text>
+  </g>
+</svg>

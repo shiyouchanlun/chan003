@@ -1,0 +1,39 @@
+---
+import { ads, type AdSlotName } from '../data/site';
+
+/**
+ * 广告位占位组件。
+ *
+ * 首版 enabled:false —— 返回 null，不输出空 <div>。
+ * 空节点会被后来人误当成布局元素去改，所以宁可什么都没有。
+ *
+ * 明确禁止：IntersectionObserver、同屏广告数量检测、loader 骨架。
+ * 在还没投放广告的前提下，任何运行时形态的广告逻辑都没有被验证的对象，
+ * 写出来只能靠想象，真投放时必被全部推翻。
+ *
+ * minHeight 只在打开开关时才生效，用于保证 CLS 不抖。
+ */
+
+interface Props {
+  slot: AdSlotName;
+}
+
+const { slot } = Astro.props;
+const config = ads.enabled ? ads.slots[slot] : null;
+---
+
+{
+  config && config.provider !== 'none' && (
+    <div class="ad-slot" data-slot={slot} style={`min-height:${config.minHeight}px`} aria-hidden="true" />
+  )
+}
+
+<style>
+  .ad-slot {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px dashed var(--line-1);
+    border-radius: var(--r-md);
+    margin: var(--s-5) 0;
+  }
+</style>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-label="标准中枢、奔走型中枢与扩张型中枢的区间对比">
+  <rect width="1200" height="675" fill="#ffffff"/>
+
+  <!-- 三个分栏分隔 -->
+  <line x1="400" y1="90" x2="400" y2="600" stroke="#EDEAE4" stroke-width="1.5"/>
+  <line x1="800" y1="90" x2="800" y2="600" stroke="#EDEAE4" stroke-width="1.5"/>
+
+  <!-- ① 标准中枢 -->
+  <text x="60" y="60" fill="#1A2028" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="700">① 标准中枢</text>
+  <text x="60" y="84" fill="#7A8492" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="14">三段对称，区间居中</text>
+  <rect x="60" y="240" width="300" height="160" fill="#A82C2C" fill-opacity="0.06" stroke="#A82C2C" stroke-width="2" stroke-dasharray="7 5"/>
+  <path d="M60 200 L110 300 L160 250 L210 350 L260 260 L310 340 L360 300" fill="none" stroke="#1D4E7C" stroke-width="3" stroke-linejoin="round"/>
+  <text x="60" y="440" fill="#A82C2C" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="14">区间：240—400</text>
+
+  <!-- ② 奔走型 -->
+  <text x="460" y="60" fill="#1A2028" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="700">② 奔走型中枢</text>
+  <text x="460" y="84" fill="#7A8492" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="14">整体倾斜，高点持续抬高</text>
+  <rect x="460" y="300" width="300" height="120" fill="#A82C2C" fill-opacity="0.06" stroke="#A82C2C" stroke-width="2" stroke-dasharray="7 5"/>
+  <path d="M460 380 L510 300 L560 360 L610 260 L660 330 L710 220 L760 280" fill="none" stroke="#1D4E7C" stroke-width="3" stroke-linejoin="round"/>
+  <text x="460" y="460" fill="#A82C2C" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="14">每一段高点都在抬高</text>
+
+  <!-- ③ 扩张型 -->
+  <text x="860" y="60" fill="#1A2028" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="700">③ 扩张型中枢</text>
+  <text x="860" y="84" fill="#7A8492" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="14">区间被反复撑大</text>
+  <rect x="860" y="230" width="300" height="200" fill="#A82C2C" fill-opacity="0.06" stroke="#A82C2C" stroke-width="2" stroke-dasharray="7 5"/>
+  <path d="M860 290 L910 380 L960 250 L1010 420 L1060 220 L1110 430 L1160 300" fill="none" stroke="#1D4E7C" stroke-width="3" stroke-linejoin="round"/>
+  <text x="860" y="470" fill="#A82C2C" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="14">区间扩大 ≠ 级别升级</text>
+
+  <!-- 底部说明 -->
+  <text x="60" y="632" fill="#7A8492" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="15">中枢是「三段连续次级别走势的重叠区间」，不是最高点到最低点。用最高最低点划中枢会让后续所有位置判断整体偏移。</text>
+</svg>

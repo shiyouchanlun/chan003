@@ -1,0 +1,326 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+import AdSlot from '../components/AdSlot.astro';
+import CtaWechat from '../components/CtaWechat.astro';
+import RiskNotice from '../components/RiskNotice.astro';
+import SeriesNav from '../components/SeriesNav.astro';
+import TagList from '../components/TagList.astro';
+import Toc from '../components/Toc.astro';
+import { sections, site } from '../data/site';
+import { getSeries } from '../data/series';
+import { formatDate, readingMinutes } from '../lib/format';
+import { getAdjacent, getRelated, getSeriesPosts, getTagCounts, postUrl, refOf, sectionUrl, slugOf, type Post } from '../lib/posts';
+import { articleJsonLd, breadcrumbJsonLd } from '../lib/seo';
+import { assetAbsUrl } from '../lib/url';
+
+import BaseLayout from './BaseLayout.astro';
+
+/**
+ * 文章页布局。全站只有这一套文章模板，三个栏目共用。
+ * 差异通过 section 驱动的条件渲染表达，不为单个栏目新建布局。
+ */
+
+interface Props {
+  post: Post;
+  headings: MarkdownHeading[];
+}
+
+const { post, headings } = Astro.props;
+const ref = refOf(post);
+const section = sections[ref.section];
+const seriesDef = post.data.series ? getSeries(post.data.series) : undefined;
+
+const [adjacent, related, tagCounts, seriesPosts] = await Promise.all([
+  getAdjacent(ref),
+  getRelated(ref, 3),
+  getTagCounts(),
+  seriesDef ? getSeriesPosts(seriesDef.slug) : Promise.resolve([]),
+]);
+
+const seriesIndex = seriesDef ? seriesPosts.findIndex((p) => slugOf(p) === slugOf(post)) : -1;
+
+/** 免责声明：review / news 默认渲染，learn 由单篇开启 */
+const showDisclaimer = post.data.disclaimer ?? ref.section !== 'learn';
+
+/** learn 里出现个股案例标签时，免责文案要更具体 */
+const hasStockCase = post.data.tags.includes('个股案例');
+
+const pathname = `/${ref.section}/${ref.slug}/`;
+const ogImage = post.data.cover ?? '/images/og-default.png';
+
+const jsonLd = [
+  articleJsonLd(post, pathname, assetAbsUrl(ogImage)),
+  breadcrumbJsonLd([
+    { name: '首页', path: '/' },
+    { name: section.name, path: section.path },
+    { name: post.data.title, path: pathname },
+  ]),
+];
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  ogImage={ogImage}
+  ogType="article"
+  canonicalPath={post.data.canonical ? undefined : pathname}
+  jsonLd={jsonLd}
+>
+  <article class="article">
+    <div class="container container--narrow">
+      <nav class="breadcrumb" aria-label="面包屑">
+        <a href="/">首页</a>
+        <span aria-hidden="true">/</span>
+        <a href={sectionUrl(ref.section)}>{section.name}</a>
+      </nav>
+
+      <header class="article-head">
+        <div class="article-meta">
+          <span class="pill">{section.name}</span>
+          <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+          <span aria-hidden="true">·</span>
+          <span>约 {readingMinutes(post.body ?? '')} 分钟</span>
+          {post.data.updatedDate && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>更新于 {formatDate(post.data.updatedDate)}</span>
+            </>
+          )}
+        </div>
+
+        <h1 class="article-title">{post.data.title}</h1>
+        <p class="article-desc">{post.data.description}</p>
+      </header>
+
+      <Toc headings={headings} />
+
+      {seriesDef && seriesIndex >= 0 && (
+        <SeriesNav
+          series={seriesDef}
+          current={post}
+          prev={seriesIndex > 0 ? (seriesPosts[seriesIndex - 1] ?? null) : null}
+          next={seriesIndex < seriesPosts.length - 1 ? (seriesPosts[seriesIndex + 1] ?? null) : null}
+          total={seriesPosts.length}
+        />
+      )}
+
+      <AdSlot slot="article-head" />
+
+      <div class="prose">
+        <slot />
+      </div>
+
+      {showDisclaimer && <RiskNotice stockSection={hasStockCase} />}
+
+      <footer class="article-foot">
+        <TagList tags={post.data.tags} counts={tagCounts} />
+
+        <CtaWechat variant="compact" />
+
+        <nav class="article-adjacent" aria-label="同栏目上下篇">
+          {
+            adjacent.prev ? (
+              <a class="adj" href={postUrl(refOf(adjacent.prev))}>
+                <span class="adj-dir">← 前一篇</span>
+                <span class="adj-title">{adjacent.prev.data.title}</span>
+              </a>
+            ) : (
+              <span class="adj adj--empty">
+                <span class="adj-dir">← 前一篇</span>
+                <span class="adj-title">已经是第一篇</span>
+              </span>
+            )
+          }
+          {
+            adjacent.next ? (
+              <a class="adj adj--next" href={postUrl(refOf(adjacent.next))}>
+                <span class="adj-dir">后一篇 →</span>
+                <span class="adj-title">{adjacent.next.data.title}</span>
+              </a>
+            ) : (
+              <span class="adj adj--next adj--empty">
+                <span class="adj-dir">后一篇 →</span>
+                <span class="adj-title">已经是最新一篇</span>
+              </span>
+            )
+          }
+        </nav>
+
+        {
+          related.length > 0 && (
+            <section class="related" aria-labelledby="related-title">
+              <h2 class="related-title" id="related-title">
+                相关阅读
+              </h2>
+              <ul>
+                {related.map((item) => (
+                  <li>
+                    <a href={postUrl(refOf(item))}>{item.data.title}</a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+
+        <p class="article-source">
+          来源：{site.name} · <a href={site.origin}>{site.origin.replace('https://', '')}</a>
+        </p>
+      </footer>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .article {
+    padding: var(--s-6) 0 var(--s-8);
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-size: var(--fs-xs);
+    color: var(--text-3);
+    margin-bottom: var(--s-4);
+  }
+
+  .breadcrumb a {
+    color: var(--text-3);
+  }
+
+  .breadcrumb a:hover {
+    color: var(--navy);
+  }
+
+  .article-head {
+    padding-bottom: var(--s-5);
+    border-bottom: 1px solid var(--line-1);
+    margin-bottom: var(--s-5);
+  }
+
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2);
+    font-size: var(--fs-xs);
+    color: var(--text-3);
+    margin-bottom: var(--s-3);
+  }
+
+  .article-title {
+    font-size: 26px;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+
+  .article-desc {
+    margin-top: var(--s-3);
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: var(--text-2);
+  }
+
+  .article-foot {
+    margin-top: var(--s-6);
+    display: grid;
+    gap: var(--s-5);
+  }
+
+  .article-adjacent {
+    display: grid;
+    gap: var(--s-2);
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--line-1);
+  }
+
+  .adj {
+    display: grid;
+    gap: 3px;
+    padding: var(--s-3) var(--s-4);
+    border: 1px solid var(--line-1);
+    border-radius: var(--r-md);
+    background: var(--surface);
+    color: var(--text-1);
+  }
+
+  .adj:hover {
+    border-color: var(--line-2);
+    text-decoration: none;
+  }
+
+  .adj-dir {
+    font-size: var(--fs-xs);
+    color: var(--text-3);
+  }
+
+  .adj-title {
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .adj--empty {
+    opacity: 0.55;
+  }
+
+  .adj--empty .adj-title {
+    font-weight: 400;
+  }
+
+  .adj--next {
+    text-align: right;
+  }
+
+  .related-title {
+    font-size: var(--fs-h3);
+    margin-bottom: var(--s-3);
+  }
+
+  .related ul {
+    list-style: none;
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .related li a {
+    display: block;
+    padding: var(--s-2) 0;
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--text-2);
+    border-bottom: 1px dashed var(--line-1);
+  }
+
+  .related li a:hover {
+    color: var(--navy);
+    text-decoration: none;
+  }
+
+  .article-source {
+    font-size: var(--fs-xs);
+    color: var(--text-3);
+  }
+
+  .article-source a {
+    color: var(--text-3);
+    text-decoration: underline;
+  }
+
+  @media (min-width: 768px) {
+    .article {
+      padding: var(--s-7) 0 var(--s-9);
+    }
+
+    .article-title {
+      font-size: 32px;
+    }
+
+    .article-adjacent {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--s-3);
+    }
+  }
+</style>

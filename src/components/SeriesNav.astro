@@ -1,0 +1,141 @@
+---
+import type { SeriesDef } from '../data/series';
+import { postUrl, refOf, type Post } from '../lib/posts';
+
+/**
+ * 系列课程导航。
+ * 系列连载是知识栏目的核心价值——读者要能看到「我在第几讲、下一讲是什么」，
+ * 否则成体系的内容会退化成散落的文章。
+ */
+
+interface Props {
+  series: SeriesDef;
+  current: Post;
+  prev: Post | null;
+  next: Post | null;
+  total: number;
+}
+
+const { series, current, prev, next, total } = Astro.props;
+const position = current.data.seriesOrder ?? 0;
+const percent = total > 0 ? Math.round((position / total) * 100) : 0;
+---
+
+<nav class="series-nav" aria-label={`${series.name} 系列导航`}>
+  <div class="series-head">
+    <span class="series-label">系列 · {series.name}</span>
+    <span class="series-count">{position} / {total} 讲</span>
+  </div>
+
+  <div class="series-bar" role="presentation">
+    <span class="series-bar-fill" style={`width:${percent}%`}></span>
+  </div>
+
+  <div class="series-links">
+    {
+      prev ? (
+        <a class="series-link" href={postUrl(refOf(prev))}>
+          <span class="series-dir">← 上一讲</span>
+          <span class="series-name">{prev.data.title}</span>
+        </a>
+      ) : (
+        <span class="series-link series-link--empty">这是第一讲</span>
+      )
+    }
+
+    {
+      next ? (
+        <a class="series-link series-link--next" href={postUrl(refOf(next))}>
+          <span class="series-dir">下一讲 →</span>
+          <span class="series-name">{next.data.title}</span>
+        </a>
+      ) : (
+        <span class="series-link series-link--empty series-link--next">本系列已到最后一讲</span>
+      )
+    }
+  </div>
+</nav>
+
+<style>
+  .series-nav {
+    background: var(--surface);
+    border: 1px solid var(--line-1);
+    border-radius: var(--r-md);
+    padding: var(--s-4) var(--s-5);
+    margin: var(--s-6) 0;
+  }
+
+  .series-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-3);
+    font-size: var(--fs-xs);
+    color: var(--text-3);
+  }
+
+  .series-label {
+    font-weight: 600;
+    color: var(--brand);
+  }
+
+  .series-bar {
+    height: 3px;
+    background: var(--line-1);
+    border-radius: 2px;
+    margin: var(--s-3) 0 var(--s-4);
+    overflow: hidden;
+  }
+
+  .series-bar-fill {
+    display: block;
+    height: 100%;
+    background: var(--brand);
+    border-radius: 2px;
+  }
+
+  .series-links {
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .series-link {
+    display: grid;
+    gap: 2px;
+    padding: var(--s-2) var(--s-3);
+    border-radius: var(--r-sm);
+    color: var(--text-1);
+  }
+
+  .series-link:hover {
+    background: var(--surface-2);
+    text-decoration: none;
+  }
+
+  .series-dir {
+    font-size: var(--fs-xs);
+    color: var(--text-3);
+  }
+
+  .series-name {
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .series-link--empty {
+    color: var(--text-3);
+    font-size: var(--fs-xs);
+  }
+
+  .series-link--next {
+    text-align: right;
+  }
+
+  @media (min-width: 600px) {
+    .series-links {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--s-3);
+    }
+  }
+</style>

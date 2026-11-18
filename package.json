@@ -1,0 +1,25 @@
+{
+  "name": "shiyou-chanlun",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "verify": "astro check && astro build && node scripts/check-links.mjs",
+    "links": "node scripts/check-links.mjs",
+    "new": "node scripts/new-post.mjs"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4",
+    "@astrojs/sitemap": "^3",
+    "astro": "^5",
+    "image-size": "^2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9",
+    "typescript": "^5"
+  }
+}

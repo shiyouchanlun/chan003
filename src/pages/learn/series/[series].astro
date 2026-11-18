@@ -1,0 +1,185 @@
+---
+import { seriesDefs } from '../../../data/series';
+import { getSeriesPosts, postUrl, refOf } from '../../../lib/posts';
+import { formatDate } from '../../../lib/format';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { withBase } from '../../../lib/url';
+
+/**
+ * 系列课程页。
+ * 只在系列下至少 1 篇时才生成——空系列页对读者和搜索引擎都是负资产。
+ */
+
+export async function getStaticPaths() {
+  const paths = await Promise.all(
+    seriesDefs.map(async (def) => {
+      const posts = await getSeriesPosts(def.slug);
+      return posts.length > 0 ? { def, posts } : null;
+    })
+  );
+
+  return paths.filter((p) => p !== null).map((p) => ({
+    params: { series: p.def.slug },
+    props: { series: p.def, posts: p.posts },
+  }));
+}
+
+const { series, posts } = Astro.props;
+---
+
+<BaseLayout
+  title={`${series.name} · 系列课程`}
+  description={series.desc}
+  canonicalPath={`/learn/series/${series.slug}/`}
+>
+  <div class="series-page">
+    <div class="container container--narrow">
+      <nav class="breadcrumb" aria-label="面包屑">
+        <a href="/">首页</a>
+        <span aria-hidden="true">/</span>
+        <a href={withBase('/learn/')}>缠论知识</a>
+        <span aria-hidden="true">/</span>
+        <span>{series.name}</span>
+      </nav>
+
+      <header class="series-head">
+        <p class="series-eyebrow">系列课程 · 共 {posts.length} 讲</p>
+        <h1 class="series-title">{series.name}</h1>
+        <p class="series-desc">{series.desc}</p>
+      </header>
+
+      <ol class="lesson-list">
+        {
+          posts.map((post, index) => (
+            <li class="lesson">
+              <a href={postUrl(refOf(post))}>
+                <span class="lesson-index">{String(post.data.seriesOrder ?? index + 1).padStart(2, '0')}</span>
+                <span class="lesson-body">
+                  <span class="lesson-title">{post.data.title}</span>
+                  <span class="lesson-desc">{post.data.description}</span>
+                  <time class="lesson-date" datetime={post.data.pubDate.toISOString()}>
+                    {formatDate(post.data.pubDate)}
+                  </time>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .series-page {
+    padding: var(--s-6) 0 var(--s-8);
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-size: var(--fs-xs);
+    color: var(--text-3);
+    margin-bottom: var(--s-4);
+  }
+
+  .breadcrumb a {
+    color: var(--text-3);
+  }
+
+  .series-head {
+    padding-bottom: var(--s-5);
+    border-bottom: 1px solid var(--line-1);
+    margin-bottom: var(--s-5);
+  }
+
+  .series-eyebrow {
+    font-size: var(--fs-xs);
+    color: var(--brand);
+    font-weight: 600;
+    margin-bottom: var(--s-2);
+  }
+
+  .series-title {
+    font-size: 28px;
+  }
+
+  .series-desc {
+    margin-top: var(--s-3);
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: var(--text-2);
+  }
+
+  .lesson-list {
+    list-style: none;
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .lesson a {
+    display: flex;
+    gap: var(--s-4);
+    padding: var(--s-4);
+    background: var(--surface);
+    border: 1px solid var(--line-1);
+    border-radius: var(--r-md);
+    color: inherit;
+  }
+
+  .lesson a:hover {
+    border-color: var(--line-2);
+    text-decoration: none;
+  }
+
+  .lesson-index {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--line-2);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.4;
+    flex-shrink: 0;
+  }
+
+  .lesson a:hover .lesson-index {
+    color: var(--brand);
+  }
+
+  .lesson-body {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .lesson-title {
+    font-size: var(--fs-h3);
+    line-height: 1.45;
+    color: var(--text-1);
+  }
+
+  .lesson a:hover .lesson-title {
+    color: var(--navy);
+  }
+
+  .lesson-desc {
+    font-size: var(--fs-sm);
+    line-height: 1.65;
+    color: var(--text-2);
+  }
+
+  .lesson-date {
+    font-size: var(--fs-xs);
+    color: var(--text-3);
+  }
+
+  @media (min-width: 768px) {
+    .series-page {
+      padding: var(--s-7) 0 var(--s-9);
+    }
+
+    .series-title {
+      font-size: 32px;
+    }
+  }
+</style>

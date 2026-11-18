@@ -1,0 +1,113 @@
+---
+import '../styles/global.css';
+
+import SiteFooter from '../components/SiteFooter.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import { site } from '../data/site';
+import { ensureIntegrity } from '../lib/validate';
+import { canonicalFor, organizationJsonLd, websiteJsonLd } from '../lib/seo';
+import { assetAbsUrl, withBase } from '../lib/url';
+
+/**
+ * 全站唯一的基础布局。所有页面都从这里出，SEO 与站点骨架只有一处实现。
+ */
+
+// 内容完整性校验挂在构建期。首页/任意页面构建时执行一次，失败则整个构建失败。
+await ensureIntegrity();
+
+interface Props {
+  title: string;
+  description: string;
+  /** 相对路径形式的 OG 图，如 /images/covers/x.webp */
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  /** 首版只有 404 用得上 */
+  noindex?: boolean;
+  /** 覆盖 canonical，用于分页页与首发于其它平台的文章 */
+  canonicalPath?: string;
+  jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
+}
+
+const {
+  title,
+  description,
+  ogImage = '/images/og-default.png',
+  ogType = 'website',
+  noindex = false,
+  canonicalPath,
+  jsonLd,
+} = Astro.props;
+
+const fullTitle = title === site.name ? site.title : `${title} - ${site.name}`;
+const canonical = canonicalFor(canonicalPath ?? Astro.url.pathname);
+const ogImageAbs = assetAbsUrl(ogImage);
+
+const blocks = [websiteJsonLd(), organizationJsonLd(), ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [])];
+---
+
+<!doctype html>
+<html lang={site.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    {noindex && <meta name="robots" content="noindex,follow" />}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageAbs} />
+    <meta property="og:locale" content={site.locale} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageAbs} />
+
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={site.name}
+      href={withBase('/rss.xml')}
+    />
+
+    {blocks.map((block) => <script type="application/ld+json" set:html={JSON.stringify(block)} />)}
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">跳到正文</a>
+    <SiteHeader />
+    <main id="main">
+      <slot />
+    </main>
+    <SiteFooter />
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    background: var(--surface);
+    color: var(--text-1);
+    padding: var(--s-2) var(--s-4);
+    z-index: 100;
+  }
+
+  .skip-link:focus {
+    left: var(--s-4);
+    top: var(--s-2);
+  }
+
+  main {
+    /* Header 是 sticky 之外的自然流；正文区最小高度防止短页页脚上浮 */
+    min-height: 50vh;
+  }
+</style>

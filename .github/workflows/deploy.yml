@@ -1,0 +1,67 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 注意：不要用 paths-ignore 排除 **/*.md。
+# 内容本身就是 markdown，排除掉会导致「文章更新了但站点没构建」，
+# 这是最难自查的一类事故。
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write # deploy-pages 需要 OIDC
+
+concurrency:
+  group: pages
+  # 不取消进行中的部署：产物不完整比晚几分钟上线更糟
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # 群二维码的更新日期从 git 提交时间推导，浅克隆拿不到文件历史
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # 质量门禁：frontmatter 写错在这里变红，而不是静默产出一个缺文章的站点
+      - name: Type and schema check
+        run: npm run check
+
+      - name: Build
+        run: npm run build
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+
+      # 死链 + 错误路径守卫。失败则不进入部署，线上保持上一版
+      - name: Check links
+        run: node scripts/check-links.mjs
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

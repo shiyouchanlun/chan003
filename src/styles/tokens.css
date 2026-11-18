@@ -1,0 +1,82 @@
+/* ============================================================
+   设计令牌 —— 与设计稿 design/mockup-home.html 完全一致
+   改视觉只改这里，组件里不写色值字面量
+   ============================================================ */
+:root {
+  /* 墨色骨架（深色头部 / 页脚 / CTA） */
+  --ink-950: #0b141f;
+  --ink-900: #101c29;
+  --ink-800: #17293c;
+  --ink-700: #22384e;
+  --ink-line: rgba(255, 255, 255, 0.1);
+  --ink-text: #e8edf3;
+  --ink-text-2: #b3c0ce;
+  --ink-text-3: #8b9aa9;
+
+  /* 浅色正文层 */
+  --paper: #f5f4f1;
+  --surface: #ffffff;
+  --surface-2: #faf9f7;
+
+  /* 文字 */
+  --text-1: #1a2028;
+  --text-2: #4c5764;
+  --text-3: #656f7b;
+
+  /* 线与分隔 */
+  --line-1: #e6e2db;
+  --line-2: #d3cdc3;
+
+  /* 品牌 */
+  --brand: #a82c2c;
+  --brand-dark: #8a2222;
+  --brand-050: #f8efee;
+  --navy: #1d4e7c;
+  --navy-dark: #163a5c;
+
+  /* 数据语义（A 股习惯：涨红跌绿，不要反过来） */
+  --up: #c7382f;
+  --down: #1b7f58;
+
+  /* 圆角 */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-pill: 999px;
+
+  /* 间距（8pt 栅格） */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 40px;
+  --s-8: 48px;
+  --s-9: 64px;
+  --s-10: 80px;
+
+  /* 字号阶梯 */
+  --fs-h1: 31px;
+  --fs-h2: 20px;
+  --fs-h3: 17px;
+  --fs-body: 16px;
+  --fs-sm: 14px;
+  --fs-xs: 12.5px;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "Source Han Sans SC", "Noto Sans CJK SC", sans-serif;
+
+  /* 布局 */
+  --container: 1120px;
+  --container-narrow: 720px;
+  /* 中文正文行长上限：约 42 个汉字，超过会显著降低回读率 */
+  --measure: 42em;
+
+  /* 广告位高度变量：首版不渲染，但开关打开时高度已确定，CLS 不会抖 */
+  --ad-home-top-h: 100px;
+  --ad-list-inline-h: 120px;
+  --ad-article-head-h: 100px;
+  --ad-article-foot-h: 250px;
+  --ad-sidebar-h: 600px;
+}

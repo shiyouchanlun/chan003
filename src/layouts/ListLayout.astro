@@ -1,0 +1,112 @@
+---
+import PostCard from '../components/PostCard.astro';
+import { withBase } from '../lib/url';
+import type { Post } from '../lib/posts';
+
+/**
+ * 列表页骨架。首页、栏目页、标签页、归档页共用。
+ * 页面之间的差异用 props 与 slot 表达，不重复实现列表逻辑。
+ */
+
+interface Props {
+  title: string;
+  description: string;
+  posts: Post[];
+  /** 在栏目自己的列表页里，栏目标签是冗余的，隐藏 */
+  hideSection?: boolean;
+  /** 空状态文案 */
+  emptyText?: string;
+}
+
+const {
+  title,
+  description,
+  posts,
+  hideSection = true,
+  emptyText = '这个栏目还没有文章。',
+} = Astro.props;
+---
+
+<div class="list-page">
+  <div class="container">
+    <header class="list-head">
+      <h1 class="list-title">{title}</h1>
+      <p class="list-desc">{description}</p>
+    </header>
+
+    <slot />
+
+    {
+      posts.length > 0 ? (
+        <ul class="post-list">
+          {posts.map((post) => (
+            <li>
+              <PostCard post={post} hideSection={hideSection} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="empty">{emptyText}</p>
+      )
+    }
+
+    <p class="archive-hint">
+      <a href={withBase('/archive/')}>查看全部文章归档 →</a>
+    </p>
+  </div>
+</div>
+
+<style>
+  .list-page {
+    padding: var(--s-6) 0 var(--s-8);
+  }
+
+  .list-head {
+    padding-bottom: var(--s-5);
+    margin-bottom: var(--s-5);
+    border-bottom: 1px solid var(--line-1);
+  }
+
+  .list-title {
+    font-size: 26px;
+    letter-spacing: -0.01em;
+  }
+
+  .list-desc {
+    margin-top: var(--s-2);
+    font-size: var(--fs-sm);
+    line-height: 1.75;
+    color: var(--text-2);
+    max-width: var(--measure);
+  }
+
+  .post-list {
+    list-style: none;
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .archive-hint {
+    margin-top: var(--s-6);
+    font-size: var(--fs-sm);
+    color: var(--text-3);
+  }
+
+  .archive-hint a {
+    color: var(--text-3);
+  }
+
+  .archive-hint a:hover {
+    color: var(--navy);
+  }
+
+  @media (min-width: 768px) {
+    .list-page {
+      padding: var(--s-7) 0 var(--s-9);
+    }
+
+    .list-title {
+      font-size: 30px;
+    }
+  }
+</style>

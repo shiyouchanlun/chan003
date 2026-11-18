@@ -1,0 +1,147 @@
+---
+import { nav, site } from '../data/site';
+import { withBase } from '../lib/url';
+
+const pathname = Astro.url.pathname;
+/** 当前页归属：/review/xxx/ 时高亮「每日复盘」 */
+const isActive = (href: string) => pathname === href || pathname.startsWith(href);
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href={withBase('/')} aria-label={`${site.name} 首页`}>
+      <span class="brand-mark" aria-hidden="true">缠</span>
+      <span class="brand-text">{site.name}</span>
+    </a>
+
+    <nav class="site-nav" aria-label="主导航">
+      {
+        nav.map((item) => (
+          <a
+            class:list={['nav-item', { 'nav-item--emphasis': item.emphasis }]}
+            href={withBase(item.href)}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          >
+            {item.text}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    background: var(--ink-900);
+    color: var(--ink-text);
+    border-bottom: 1px solid var(--ink-line);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--s-5);
+    min-height: 60px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ink-text);
+    flex-shrink: 0;
+  }
+
+  .brand:hover {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .brand-mark {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--r-sm);
+    background: var(--brand);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .brand-text {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: auto;
+    /* 4 项是 375px 下的硬上限，不允许再加第 5 项 */
+    flex-wrap: nowrap;
+  }
+
+  .nav-item {
+    font-size: 14px;
+    line-height: 1;
+    padding: 9px 10px;
+    border-radius: var(--r-sm);
+    color: var(--ink-text-2);
+    white-space: nowrap;
+  }
+
+  .nav-item:hover {
+    color: #fff;
+    background: var(--ink-800);
+    text-decoration: none;
+  }
+
+  .nav-item[aria-current='page'] {
+    color: #fff;
+    background: var(--ink-800);
+  }
+
+  /* 全站唯一的业务目标入口，视觉权重高一档 */
+  .nav-item--emphasis {
+    color: #fff;
+    font-weight: 600;
+    margin-left: var(--s-2);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+  }
+
+  .nav-item--emphasis:hover {
+    background: var(--brand);
+    border-color: var(--brand);
+  }
+
+  /* 窄屏：品牌名让位给导航，导航入口优先可见 */
+  @media (max-width: 430px) {
+    .header-inner {
+      gap: var(--s-3);
+    }
+
+    .brand-text {
+      display: none;
+    }
+
+    .nav-item {
+      padding: 9px 7px;
+      font-size: 14px;
+    }
+
+    .nav-item--emphasis {
+      margin-left: 0;
+    }
+  }
+
+  @media (max-width: 359px) {
+    .nav-item {
+      padding: 9px 5px;
+      font-size: 13px;
+    }
+  }
+</style>

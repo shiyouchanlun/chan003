@@ -1,0 +1,60 @@
+---
+import { TAG_PAGE_MIN_POSTS, tagSlug } from '../data/tags';
+import { withBase } from '../lib/url';
+
+/**
+ * 标签列表。
+ *
+ * 关键规则：标签页只在篇数 >= TAG_PAGE_MIN_POSTS 时生成，
+ * 所以链接也必须按同样条件化——否则每篇文章都会带出一批指向不存在页面的死链，
+ * 点进去 404，比没有标签更差。
+ *
+ * 不足 3 篇时渲染为纯文本：去掉下划线与 hover，但字色保持正常可读。
+ * 标签在初期是「分类信号」不是「导航入口」，要看得见，只是点不动。
+ */
+
+interface Props {
+  tags: string[];
+  counts: Map<string, number>;
+}
+
+const { tags, counts } = Astro.props;
+---
+
+<ul class="tag-row" aria-label="文章标签">
+  {
+    tags.map((tag) => {
+      const count = counts.get(tag) ?? 0;
+      const slug = tagSlug(tag);
+      const linked = count >= TAG_PAGE_MIN_POSTS && slug;
+
+      return (
+        <li>
+          {linked ? (
+            <a class="tag tag--link" href={withBase(`/tags/${slug}/`)}>
+              {tag}
+            </a>
+          ) : (
+            <span class="tag" title={`该标签下目前 ${count} 篇，满 ${TAG_PAGE_MIN_POSTS} 篇后开放标签页`}>
+              {tag}
+            </span>
+          )}
+        </li>
+      );
+    })
+  }
+</ul>
+
+<style>
+  .tag--link {
+    color: var(--navy);
+    border-color: rgba(29, 78, 124, 0.28);
+    background: var(--surface);
+  }
+
+  .tag--link:hover {
+    border-color: var(--navy);
+    background: var(--surface);
+    text-decoration: none;
+  }
+</style>

@@ -1,0 +1,137 @@
+---
+import { formatDate } from '../../lib/format';
+import { getArchive, postUrl, refOf } from '../../lib/posts';
+import { sections } from '../../data/site';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+/**
+ * 全部文章归档。按年月倒序分组。
+ * 与标签页不同，归档页是随内容增长的真实索引，不是薄内容，所以首版就保留。
+ */
+
+const groups = await getArchive();
+const total = groups.reduce((sum, g) => sum + g.posts.length, 0);
+---
+
+<BaseLayout
+  title="全部文章归档"
+  description={`按月份浏览全部 ${total} 篇文章：缠论知识、每日复盘与消息解读。`}
+  canonicalPath="/archive/"
+>
+  <div class="archive-page">
+    <div class="container container--narrow">
+      <header class="archive-head">
+        <h1>全部文章归档</h1>
+        <p class="meta">共 {total} 篇 · {groups.length} 个月</p>
+      </header>
+
+      {
+        groups.length === 0 ? (
+          <p class="empty">还没有文章。</p>
+        ) : (
+          groups.map((group) => (
+            <section class="month" aria-label={group.label}>
+              <h2 class="month-title">{group.label}</h2>
+              <ul>
+                {group.posts.map((post) => (
+                  <li>
+                    <a href={postUrl(refOf(post))}>
+                      <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+                      <span class="item-title">{post.data.title}</span>
+                      <span class="item-section">{sections[post.data.section as keyof typeof sections].name}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))
+        )
+      }
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .archive-page {
+    padding: var(--s-6) 0 var(--s-8);
+  }
+
+  .archive-head {
+    padding-bottom: var(--s-4);
+    border-bottom: 1px solid var(--line-1);
+    margin-bottom: var(--s-5);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-4);
+  }
+
+  .archive-head h1 {
+    font-size: 26px;
+  }
+
+  .month {
+    margin-bottom: var(--s-5);
+  }
+
+  .month-title {
+    font-size: var(--fs-h3);
+    color: var(--text-2);
+    padding-bottom: var(--s-2);
+    border-bottom: 1px solid var(--line-1);
+    margin-bottom: var(--s-2);
+  }
+
+  .month ul {
+    list-style: none;
+  }
+
+  .month a {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2px var(--s-3);
+    padding: var(--s-2) 0;
+    color: inherit;
+    align-items: baseline;
+  }
+
+  .month a:hover {
+    text-decoration: none;
+  }
+
+  .month a:hover .item-title {
+    color: var(--navy);
+  }
+
+  .month time {
+    font-size: var(--fs-xs);
+    color: var(--text-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .item-title {
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--text-1);
+  }
+
+  .item-section {
+    grid-column: 2;
+    font-size: var(--fs-xs);
+    color: var(--text-3);
+  }
+
+  @media (min-width: 768px) {
+    .archive-page {
+      padding: var(--s-7) 0 var(--s-9);
+    }
+
+    .month a {
+      grid-template-columns: 92px 1fr auto;
+    }
+
+    .item-section {
+      grid-column: auto;
+    }
+  }
+</style>

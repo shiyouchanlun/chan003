@@ -1,0 +1,40 @@
+---
+import { TAG_PAGE_MIN_POSTS, tagDefs } from '../../data/tags';
+import { getByTag, getTagCounts } from '../../lib/posts';
+import ListLayout from '../../layouts/ListLayout.astro';
+
+/**
+ * 标签页。
+ *
+ * 只在某标签下 >= TAG_PAGE_MIN_POSTS 篇时生成。
+ * 首版可能只有 2-3 个标签页存在，这是有意为之：
+ * 内容量少时「每个标签都能点」会批量产生薄页面，对 SEO 是负资产。
+ */
+
+export async function getStaticPaths() {
+  const counts = await getTagCounts();
+  const paths = [];
+
+  for (const def of tagDefs) {
+    const count = counts.get(def.name) ?? 0;
+    if (count < TAG_PAGE_MIN_POSTS) continue;
+
+    paths.push({
+      params: { tag: def.slug },
+      props: { name: def.name, count },
+    });
+  }
+
+  return paths;
+}
+
+const { name, count } = Astro.props;
+const posts = await getByTag(name);
+---
+
+<ListLayout
+  title={`标签：${name}`}
+  description={`「${name}」相关文章，共 ${count} 篇。`}
+  posts={posts}
+  emptyText="这个标签下还没有文章。"
+/>

@@ -1,0 +1,117 @@
+---
+import { sections } from '../data/site';
+import { formatDate, readingMinutes } from '../lib/format';
+import { postUrl, refOf, type Post } from '../lib/posts';
+
+interface Props {
+  post: Post;
+  /** 隐藏栏目标签（在栏目自己的列表页里是冗余信息） */
+  hideSection?: boolean;
+  /** 大卡：首页主角位用 */
+  lead?: boolean;
+}
+
+const { post, hideSection = false, lead = false } = Astro.props;
+const ref = refOf(post);
+const section = sections[ref.section];
+---
+
+<article class:list={['card', { 'card--lead': lead }]}>
+  <a class="card-body" href={postUrl(ref)}>
+    <div class="card-meta">
+      {!hideSection && <span class="pill">{section.name}</span>}
+      <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+      <span class="dot" aria-hidden="true">·</span>
+      <span>约 {readingMinutes(post.body ?? '')} 分钟</span>
+    </div>
+
+    <h3 class="card-title">{post.data.title}</h3>
+    <p class="card-desc">{post.data.description}</p>
+  </a>
+</article>
+
+<style>
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line-1);
+    border-radius: var(--r-md);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .card:hover {
+    border-color: var(--line-2);
+    box-shadow: 0 2px 12px rgba(16, 28, 41, 0.06);
+  }
+
+  .card-body {
+    display: block;
+    padding: var(--s-4) var(--s-5);
+    color: inherit;
+  }
+
+  .card-body:hover {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-size: var(--fs-xs);
+    color: var(--text-3);
+    margin-bottom: var(--s-2);
+  }
+
+  .dot {
+    color: var(--line-2);
+  }
+
+  .card-title {
+    font-size: var(--fs-h3);
+    line-height: 1.45;
+    color: var(--text-1);
+    letter-spacing: 0;
+  }
+
+  .card-body:hover .card-title {
+    color: var(--navy);
+  }
+
+  .card-desc {
+    margin-top: var(--s-2);
+    font-size: var(--fs-sm);
+    line-height: 1.7;
+    color: var(--text-2);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* 首页主角卡：字号与留白都放大一档 */
+  .card--lead .card-body {
+    padding: var(--s-5);
+  }
+
+  .card--lead .card-title {
+    font-size: 24px;
+    line-height: 1.4;
+  }
+
+  .card--lead .card-desc {
+    font-size: var(--fs-body);
+    -webkit-line-clamp: 3;
+    margin-top: var(--s-3);
+  }
+
+  @media (min-width: 768px) {
+    .card--lead .card-body {
+      padding: var(--s-6);
+    }
+
+    .card--lead .card-title {
+      font-size: 27px;
+    }
+  }
+</style>

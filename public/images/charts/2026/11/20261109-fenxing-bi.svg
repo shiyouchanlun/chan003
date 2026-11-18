@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-label="顶分型与底分型的构成，以及一笔的连接方式">
+  <rect width="1200" height="675" fill="#ffffff"/>
+
+  <!-- 标题 -->
+  <text x="60" y="52" fill="#1A2028" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="700">顶分型 → 一笔 → 底分型</text>
+
+  <!-- 分型框 -->
+  <rect x="180" y="210" width="190" height="190" fill="#C7382F" fill-opacity="0.06" stroke="#C7382F" stroke-width="2" stroke-dasharray="7 5" rx="6"/>
+  <rect x="480" y="290" width="190" height="290" fill="#1B7F58" fill-opacity="0.06" stroke="#1B7F58" stroke-width="2" stroke-dasharray="7 5" rx="6"/>
+
+  <!-- K 线（阳线红、阴线绿，A 股习惯） -->
+  <!-- K1 阳 -->
+  <line x1="140" y1="384" x2="140" y2="472" stroke="#C7382F" stroke-width="2"/>
+  <rect x="123" y="399" width="34" height="58" fill="#ffffff" stroke="#C7382F" stroke-width="2.5"/>
+  <!-- K2 阳 -->
+  <line x1="240" y1="296" x2="240" y2="413" stroke="#C7382F" stroke-width="2"/>
+  <rect x="223" y="310" width="34" height="89" fill="#ffffff" stroke="#C7382F" stroke-width="2.5"/>
+  <!-- K3 顶分型中间 K 线 -->
+  <line x1="340" y1="237" x2="340" y2="369" stroke="#C7382F" stroke-width="2"/>
+  <rect x="323" y="281" width="34" height="29" fill="#C7382F" stroke="#C7382F" stroke-width="2.5"/>
+  <!-- K4 阴 -->
+  <line x1="440" y1="325" x2="440" y2="443" stroke="#1B7F58" stroke-width="2"/>
+  <rect x="423" y="281" width="34" height="132" fill="#1B7F58" stroke="#1B7F58" stroke-width="2.5"/>
+  <!-- K5 底分型中间 K 线 -->
+  <line x1="540" y1="399" x2="540" y2="560" stroke="#1B7F58" stroke-width="2"/>
+  <rect x="523" y="413" width="34" height="88" fill="#1B7F58" stroke="#1B7F58" stroke-width="2.5"/>
+  <!-- K6 阳 -->
+  <line x1="640" y1="310" x2="640" y2="516" stroke="#C7382F" stroke-width="2"/>
+  <rect x="623" y="355" width="34" height="146" fill="#ffffff" stroke="#C7382F" stroke-width="2.5"/>
+  <!-- K7 阳 -->
+  <line x1="740" y1="267" x2="740" y2="384" stroke="#C7382F" stroke-width="2"/>
+  <rect x="723" y="296" width="34" height="59" fill="#ffffff" stroke="#C7382F" stroke-width="2.5"/>
+
+  <!-- 一笔：从顶分型最高点到低分型最低点 -->
+  <path d="M340 237 L540 560" stroke="#1D4E7C" stroke-width="3" stroke-dasharray="9 7" fill="none"/>
+  <circle cx="340" cy="237" r="6" fill="#1D4E7C"/>
+  <circle cx="540" cy="560" r="6" fill="#1D4E7C"/>
+
+  <!-- 标注 -->
+  <g font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="16">
+    <text x="180" y="192" fill="#C7382F" font-weight="600">顶分型（3 根 K 线）</text>
+    <text x="480" y="272" fill="#1B7F58" font-weight="600">底分型（3 根 K 线）</text>
+    <text x="600" y="130" fill="#1D4E7C" font-weight="600">一笔 = 顶分型 + 底分型 + 至少 5 根 K 线</text>
+    <text x="600" y="158" fill="#7A8492" font-size="14">两个分型之间必须有不属于任何一方的独立 K 线</text>
+  </g>
+
+  <!-- 说明 -->
+  <text x="60" y="620" fill="#7A8492" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="15">判定要点：中间那根的最高价与最低价必须同时高于（或低于）左右两根，只看影线顶点会认错分型。</text>
+</svg>

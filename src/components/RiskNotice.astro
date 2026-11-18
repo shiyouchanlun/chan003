@@ -1,0 +1,39 @@
+---
+/**
+ * 免责声明 —— review / news 强制渲染，learn 由内容按需开启。
+ * 视觉层级低于正文：浅底、小字、无边框强调，不抢阅读注意力，但也不能看不见。
+ */
+interface Props {
+  /** learn 类文章里包含个股案例时用，文案更具体 */
+  stockSection?: boolean;
+}
+
+const { stockSection = false } = Astro.props;
+---
+
+<aside class="risk" aria-label="免责声明">
+  <p>
+    {
+      stockSection
+        ? '以下为技术结构记录，不构成任何投资建议，亦不涉及具体操作指导。文中个股仅用于说明结构，不推荐任何标的。'
+        : '本文仅从缠论结构角度做技术分析记录，不构成任何投资建议。市场有风险，决策需独立判断。'
+    }
+  </p>
+</aside>
+
+<style>
+  .risk {
+    margin: var(--s-6) 0 0;
+    padding: var(--s-3) var(--s-4);
+    background: var(--surface-2);
+    border-top: 1px solid var(--line-1);
+    border-bottom: 1px solid var(--line-1);
+  }
+
+  .risk p {
+    font-size: var(--fs-xs);
+    line-height: 1.75;
+    color: var(--text-3);
+    margin: 0;
+  }
+</style>
