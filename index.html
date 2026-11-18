@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GitHub Pages 示例页</title>
-  <meta name="description" content="一个最小可运行的静态站点，用于验证 GitHub Pages 部署链路。" />
+  <title>十优缠论 · 站点建设中</title>
+  <meta name="description" content="十优缠论 —— 缠论知识体系与 A 股每日复盘。站点正在建设中。" />
+  <meta name="robots" content="noindex, nofollow" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>" />
   <style>
     *, *::before, *::after { box-sizing: border-box; }
@@ -170,11 +171,12 @@
 <body>
   <header>
     <div class="wrap">
-      <span class="badge">已部署成功</span>
-      <h1>GitHub Pages 跑通了</h1>
+      <span class="badge">域名已接入</span>
+      <h1>十优缠论 · 站点建设中</h1>
       <p class="lead">
-        这是一个最小可运行的静态站点：纯 HTML + 内联样式，零依赖、零构建。
-        能看到这一页，说明仓库、分支和 Pages 设置都已经正确。
+        缠论知识体系 · 每个交易日收盘复盘 · 消息解读。
+        这一页是过渡页：域名 <code>www.shiyouchanlun.com</code> 已绑定并跑通 HTTPS，
+        正式站点正在按既定方案重建。
       </p>
     </div>
   </header>
@@ -182,12 +184,12 @@
   <main>
     <div class="wrap">
       <section class="card">
-        <h2>下一步可以做什么</h2>
+        <h2>当前进度</h2>
         <ol>
-          <li>把 <code>index.html</code> 的内容换成你真正想放的页面。</li>
-          <li>需要多页就在同目录新建 <code>about.html</code>，用相对链接互跳。</li>
-          <li>要自定义域名，在仓库 <em>Settings → Pages</em> 里填域名并配置 DNS 记录。</li>
-          <li>每次 <code>git push</code> 后，Pages 会自动重新发布，通常 30 秒内生效。</li>
+          <li>域名 <code>www.shiyouchanlun.com</code> 已接入，HTTPS 已生效。</li>
+          <li>技术方案已定稿（Astro + Markdown + GitHub Actions），详见 <code>docs/交付方案.md</code>。</li>
+          <li>下一步：搭建 Astro 站点骨架，随后用正式页面替换本过渡页。</li>
+          <li>本页已加 <code>noindex</code>，不会污染正式站点的搜索收录。</li>
         </ol>
       </section>
 
@@ -199,8 +201,8 @@
       </section>
 
       <section class="card">
-        <h2>仓库</h2>
-        <p class="muted" style="margin:0 0 4px">源码托管在 <code>shiyouchanlun/chan003</code>，每次推送自动重新发布。</p>
+        <h2>仓库与域名</h2>
+        <p class="muted" style="margin:0 0 4px">源码托管在 <code>shiyouchanlun/chan003</code>，每次推送自动重新发布。正式域名为 <code>www.shiyouchanlun.com</code>。</p>
         <a class="btn" href="https://github.com/shiyouchanlun/chan003" target="_blank" rel="noopener noreferrer">
           查看 GitHub 仓库
         </a>
@@ -210,7 +212,7 @@
 
   <footer>
     <div class="wrap">
-      Powered by GitHub Pages · 静态站点示例
+      www.shiyouchanlun.com · 十优缠论
     </div>
   </footer>
 </body>

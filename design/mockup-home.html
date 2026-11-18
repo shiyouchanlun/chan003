@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>十优缠论 · 缠论结构 · 每日复盘 · 一起看图（设计稿 / 首页）</title>
+<meta name="description" content="十优缠论：面向 A 股散户的缠论知识分享站。每日收盘复盘、消息解读，以及复盘中的个股结构案例。" />
+<meta name="robots" content="noindex" />
+<style>
+/* ============================================================
+   0. 设计令牌 Design Tokens
+   ============================================================ */
+:root{
+  /* 墨色骨架（深色头部 / 深色页脚 / 深色 CTA） */
+  --ink-950:#0B141F;
+  --ink-900:#101C29;
+  --ink-800:#17293C;
+  --ink-700:#22384E;
+  --ink-line:rgba(255,255,255,.10);
+  --ink-text:#E8EDF3;      /* 深底主文字 */
+  --ink-text-2:#B3C0CE;    /* 深底次要文字  contrast≈7.6:1 @ ink-900 */
+  --ink-text-3:#8B9AA9;    /* 深底辅助文字  contrast≈4.9:1 @ ink-900 */
+
+  /* 浅色正文层 */
+  --paper:#F5F4F1;         /* 页面底色，暖白，镇住纯白的刺眼感 */
+  --surface:#FFFFFF;       /* 卡片 */
+  --surface-2:#FAF9F7;     /* 内嵌块 / 引用 / 表格 */
+
+  /* 文字 */
+  --text-1:#1A2028;        /* 正文  contrast≈15.4:1 */
+  --text-2:#4C5764;        /* 次要  contrast≈7.4:1 */
+  --text-3:#656F7B;        /* 辅助/元信息  对白 5.1:1、对纸底 4.5:1 */
+
+  /* 线与分隔 */
+  --line-1:#E6E2DB;
+  --line-2:#D3CDC3;
+
+  /* 品牌 */
+  --brand:#A82C2C;         /* 朱砂红：栏目标签 / CTA / 强调线 */
+  --brand-dark:#8A2222;
+  --brand-050:#F8EFEE;
+  --navy:#1D4E7C;          /* 交互蓝：正文链接 */
+  --navy-dark:#163A5C;
+
+  /* 数据语义（A 股习惯：涨红跌绿） */
+  --up:#C7382F;
+  --down:#1B7F58;
+
+  /* 圆角 */
+  --r-sm:6px; --r-md:10px; --r-lg:14px; --r-pill:999px;
+
+  /* 间距（8pt 栅格） */
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px;
+  --s-6:32px; --s-7:40px; --s-8:48px; --s-9:64px; --s-10:80px;
+
+  /* 字号阶梯 */
+  --fs-h1:31px; --fs-h2:20px; --fs-h3:17px;
+  --fs-body:16px; --fs-sm:14px; --fs-xs:12.5px;
+
+  --font-sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB",
+              "Microsoft YaHei","Source Han Sans SC","Noto Sans CJK SC","Segoe UI",Roboto,sans-serif;
+}
+
+/* ============================================================
+   1. 基础
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--text-1);
+  font-family:var(--font-sans);font-size:var(--fs-body);line-height:1.75;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+h1,h2,h3,h4,p,ul,ol,figure,blockquote{margin:0}
+ul,ol{padding-left:1.25em}
+a{color:var(--navy);text-decoration:none}
+a:focus-visible{outline:2px solid var(--navy);outline-offset:3px;border-radius:3px}
+.ink a:focus-visible,.site-footer a:focus-visible{outline-color:#8FB6D8}
+img,svg{max-width:100%}
+.container{width:100%;max-width:1180px;margin:0 auto;padding:0 24px}
+.tnum{font-variant-numeric:tabular-nums}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ============================================================
+   2. 深色头部
+   ============================================================ */
+.site-header{background:var(--ink-900);border-bottom:1px solid rgba(255,255,255,.07);position:relative}
+.hdr{display:flex;align-items:center;gap:var(--s-6);height:68px}
+.brand{display:flex;align-items:center;gap:10px;color:var(--ink-text);flex:0 0 auto}
+.brand:focus-visible{outline-color:#8FB6D8}
+.brand-mark{
+  width:26px;height:26px;border:1.5px solid var(--brand);border-radius:var(--r-sm);
+  display:flex;flex-direction:column;justify-content:center;gap:3px;padding:0 5px;flex:0 0 auto;
+}
+.brand-mark i{display:block;height:2px;background:var(--ink-text);border-radius:1px}
+.brand-mark i:nth-child(1){width:100%;background:var(--brand)}
+.brand-mark i:nth-child(2){width:70%}
+.brand-mark i:nth-child(3){width:45%;opacity:.5}
+.brand-name{font-size:19px;font-weight:700;letter-spacing:.06em;line-height:1.2}
+.brand-sub{display:block;font-size:11.5px;font-weight:400;letter-spacing:.02em;color:var(--ink-text-3);margin-top:1px}
+
+.nav-check{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+.nav-burger{display:none;margin-left:auto;width:40px;height:40px;border:1px solid var(--ink-line);
+  border-radius:var(--r-sm);cursor:pointer;flex-direction:column;justify-content:center;gap:4px;padding:0 10px}
+.nav-burger span{display:block;height:1.5px;background:var(--ink-text);border-radius:1px;transition:transform .18s,opacity .18s}
+.nav-check:focus-visible ~ .nav-burger{outline:2px solid #8FB6D8;outline-offset:2px}
+
+.site-nav{display:flex;align-items:center;gap:var(--s-1);margin-left:auto}
+.site-nav a{
+  color:var(--ink-text-2);font-size:15px;padding:8px 12px;border-radius:var(--r-sm);
+  transition:color .15s,background .15s;
+}
+.site-nav a:hover{color:#fff;background:rgba(255,255,255,.06)}
+.site-nav a[aria-current="page"]{color:#fff;position:relative}
+.site-nav a[aria-current="page"]::after{
+  content:"";position:absolute;left:12px;right:12px;bottom:2px;height:2px;background:var(--brand);border-radius:1px;
+}
+.nav-cta{
+  margin-left:var(--s-3);padding:7px 16px !important;border:1px solid rgba(168,44,44,.85);
+  color:#F3DADA !important;font-size:14px !important;border-radius:var(--r-pill) !important;
+}
+.nav-cta:hover{background:var(--brand) !important;border-color:var(--brand);color:#fff !important}
+
+/* ============================================================
+   3. 首屏：今日复盘大卡 + 入门入口
+   ============================================================ */
+main{padding:var(--s-8) 0 var(--s-10)}
+.hero{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:var(--s-5);align-items:stretch}
+
+.lead-card{
+  background:var(--surface);border:1px solid var(--line-1);border-radius:var(--r-lg);
+  padding:var(--s-7) var(--s-7) var(--s-5);box-shadow:0 1px 2px rgba(16,24,40,.04);
+  display:flex;flex-direction:column;
+}
+.eyebrow{display:flex;align-items:center;gap:var(--s-3);flex-wrap:wrap;font-size:var(--fs-xs);color:var(--text-3)}
+.tag{
+  display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:var(--r-sm);
+  background:var(--brand-050);color:var(--brand);font-size:12.5px;font-weight:600;letter-spacing:.02em;line-height:1.6;
+}
+.tag::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--brand)}
+.tag--navy{background:#EDF2F8;color:var(--navy)}
+.tag--navy::before{background:var(--navy)}
+
+.lead-title{
+  font-size:var(--fs-h1);line-height:1.42;font-weight:700;letter-spacing:-.01em;
+  margin:var(--s-4) 0 var(--s-3);color:var(--text-1);
+}
+.lead-title a{color:inherit;transition:color .15s}
+.lead-title a:hover{color:var(--navy)}
+.lead-excerpt{color:var(--text-2);font-size:15.5px;line-height:1.85;margin-bottom:var(--s-5);max-width:44em}
+
+/* 指数数据条 */
+.quote-strip{
+  display:flex;flex-wrap:wrap;gap:var(--s-2) var(--s-6);
+  padding:var(--s-3) 0;border-top:1px solid var(--line-1);border-bottom:1px solid var(--line-1);
+  margin:auto 0 var(--s-4);
+}
+.quote{display:flex;align-items:baseline;gap:7px;font-size:13.5px}
+.quote-name{color:var(--text-3)}
+.quote-val{font-weight:600;letter-spacing:-.01em}
+.quote-chg{font-size:13px;font-weight:600}
+.is-up{color:var(--up)}
+.is-down{color:var(--down)}
+
+.lead-foot{display:flex;align-items:center;justify-content:space-between;gap:var(--s-4);flex-wrap:wrap}
+.meta{color:var(--text-3);font-size:13px;display:flex;align-items:center;gap:var(--s-2);flex-wrap:wrap}
+.meta .dot{color:var(--line-2)}
+.more-link{color:var(--navy);font-size:14.5px;font-weight:600;white-space:nowrap}
+.more-link span{display:inline-block;transition:transform .15s}
+.more-link:hover span{transform:translateX(3px)}
+
+/* 右侧入门卡（深色，与头部呼应） */
+.entry-card{
+  background:var(--ink-800);border:1px solid rgba(255,255,255,.08);border-radius:var(--r-lg);
+  padding:var(--s-5);display:flex;flex-direction:column;color:var(--ink-text);
+}
+.entry-kicker{font-size:11.5px;letter-spacing:.14em;color:var(--ink-text-3);text-transform:uppercase}
+.entry-title{font-size:19px;line-height:1.55;font-weight:700;margin:var(--s-3) 0 var(--s-2);color:#fff}
+.entry-title a{color:inherit}
+.entry-title a:hover{color:#F0C9C9}
+.entry-desc{font-size:13.5px;line-height:1.8;color:var(--ink-text-2)}
+.progress-block{margin-top:auto;padding-top:var(--s-5)}
+.progress-head{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-text-3);margin-bottom:7px}
+.progress-head b{color:var(--ink-text);font-weight:600}
+.progress-bar{height:4px;border-radius:2px;background:rgba(255,255,255,.12);overflow:hidden}
+.progress-bar i{display:block;height:100%;width:16.7%;background:var(--brand);border-radius:2px}
+.entry-foot{
+  margin-top:var(--s-4);padding-top:var(--s-3);border-top:1px solid rgba(255,255,255,.1);
+  font-size:12.5px;color:var(--ink-text-3);display:flex;justify-content:space-between;gap:var(--s-2);
+}
+.entry-cta{color:#F0C9C9;font-weight:600}
+
+/* ============================================================
+   4. 区块通用
+   ============================================================ */
+.section{margin-top:var(--s-9)}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s-4);margin-bottom:var(--s-5)}
+.sec-title{
+  font-size:var(--fs-h2);font-weight:700;letter-spacing:.01em;display:flex;align-items:center;gap:10px;
+}
+.sec-title::before{content:"";width:3px;height:17px;background:var(--brand);border-radius:2px;flex:0 0 auto}
+.sec-note{font-size:13px;color:var(--text-3);margin-top:2px}
+.sec-link{font-size:14px;color:var(--text-3);white-space:nowrap}
+.sec-link:hover{color:var(--navy)}
+
+/* 4.1 复盘列表 */
+.list-card{background:var(--surface);border:1px solid var(--line-1);border-radius:var(--r-lg);overflow:hidden}
+.row{
+  display:grid;grid-template-columns:96px minmax(0,1fr) 76px;gap:var(--s-5);
+  padding:var(--s-4) var(--s-6);border-bottom:1px solid var(--line-1);
+  transition:background .15s;
+}
+.row:last-child{border-bottom:0}
+.row:hover{background:#FBFAF8}
+.row-date{font-size:13px;color:var(--text-3);line-height:1.6;padding-top:2px}
+.row-date b{display:block;color:var(--text-2);font-weight:600;font-size:14px}
+.row-title{font-size:16.5px;font-weight:600;line-height:1.55}
+.row-title a{color:var(--text-1)}
+.row-title a:hover{color:var(--navy);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;text-decoration-color:rgba(29,78,124,.4)}
+.row-excerpt{font-size:14px;color:var(--text-2);margin-top:5px;line-height:1.7;
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.row-len{font-size:12.5px;color:var(--text-3);text-align:right;padding-top:3px}
+
+/* 4.2 知识体系卡片 */
+.grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s-4)}
+.kcard{
+  background:var(--surface);border:1px solid var(--line-1);border-radius:var(--r-lg);
+  padding:var(--s-5);display:flex;flex-direction:column;transition:border-color .15s,transform .15s,box-shadow .15s;
+}
+.kcard:hover{border-color:var(--line-2);transform:translateY(-2px);box-shadow:0 4px 14px rgba(16,24,40,.06)}
+.kcard-no{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--brand)}
+.kcard-title{font-size:16.5px;font-weight:700;margin:var(--s-2) 0 6px;line-height:1.5}
+.kcard-title a{color:var(--text-1)}
+.kcard-title a:hover{color:var(--navy)}
+.kcard-desc{font-size:13.5px;line-height:1.75;color:var(--text-2);flex:1}
+.kcard-foot{
+  margin-top:var(--s-4);padding-top:var(--s-3);border-top:1px solid var(--line-1);
+  display:flex;align-items:center;justify-content:space-between;font-size:12.5px;color:var(--text-3);
+}
+.kcard-foot b{color:var(--text-2);font-weight:600}
+.kcard-first{color:var(--navy);font-size:12.5px}
+.kcard-first:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* 4.3 双栏 */
+.grid-2-3{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-6)}
+.panel{background:var(--surface);border:1px solid var(--line-1);border-radius:var(--r-lg);padding:var(--s-5) var(--s-6)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s-2)}
+.panel-title{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+.panel-title::before{content:"";width:3px;height:14px;background:var(--brand);border-radius:2px}
+.panel-title--navy::before{background:var(--navy)}
+.panel-sub{margin:0 0 var(--s-2);font-size:12.5px;color:var(--text-3);line-height:1.5}
+.mini{list-style:none;padding:0;margin:0}
+.mini li{padding:var(--s-4) 0;border-bottom:1px solid var(--line-1)}
+.mini li:last-child{border-bottom:0;padding-bottom:0}
+.mini-date{font-size:12.5px;color:var(--text-3);letter-spacing:.02em}
+.mini-title{font-size:15.5px;font-weight:600;line-height:1.6;margin-top:3px}
+.mini-title a{color:var(--text-1)}
+.mini-title a:hover{color:var(--navy);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;text-decoration-color:rgba(29,78,124,.4)}
+.mini-desc{font-size:13.5px;color:var(--text-2);margin-top:5px;line-height:1.72;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mini-tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.chip{
+  font-size:11.5px;padding:2px 8px;border-radius:var(--r-sm);background:var(--surface-2);
+  color:var(--text-2);border:1px solid var(--line-1);letter-spacing:.02em;
+}
+
+/* ============================================================
+   5. 公众号 CTA（深色块）
+   ============================================================ */
+.cta-band{background:var(--ink-900);color:var(--ink-text)}
+.cta-inner{
+  display:grid;grid-template-columns:minmax(0,1fr) 214px;gap:var(--s-8);align-items:center;
+  padding:var(--s-9) 0;
+}
+.cta-kicker{font-size:11.5px;letter-spacing:.16em;color:var(--brand);font-weight:700}
+.cta-title{font-size:clamp(21px,2.1vw,26px);font-weight:700;line-height:1.5;color:#fff;margin:var(--s-3) 0 var(--s-3)}
+.cta-desc{font-size:14.5px;color:var(--ink-text-2);line-height:1.85;max-width:38em}
+.cta-points{list-style:none;padding:0;margin:var(--s-5) 0 0;display:grid;gap:10px}
+.cta-points li{display:flex;gap:9px;font-size:14px;color:var(--ink-text-2);line-height:1.7}
+.cta-points b{color:var(--ink-text);font-weight:600}
+.cta-points li::before{
+  content:"";flex:0 0 auto;width:15px;height:15px;margin-top:5px;border-radius:50%;
+  background:rgba(168,44,44,.18);border:1px solid rgba(168,44,44,.7);
+}
+.cta-note{font-size:12.5px;color:var(--ink-text-3);margin-top:var(--s-4);line-height:1.7}
+
+.qr-box{text-align:center}
+.qr{
+  width:172px;height:172px;margin:0 auto;background:#fff;border-radius:var(--r-md);padding:11px;
+  box-shadow:0 6px 20px rgba(0,0,0,.28);position:relative;
+}
+.qr-inner{
+  width:100%;height:100%;border-radius:2px;
+  background-image:
+    repeating-linear-gradient(90deg,rgba(16,28,41,.92) 0 4px,transparent 4px 11px),
+    repeating-linear-gradient(0deg,rgba(16,28,41,.92) 0 4px,transparent 4px 11px);
+  background-blend-mode:multiply;
+}
+.qr-inner::before,.qr-inner::after{
+  content:"";position:absolute;width:34px;height:34px;border:3px solid var(--ink-900);border-radius:2px;background:#fff;
+}
+.qr-inner::before{top:11px;left:11px}
+.qr-inner::after{top:11px;right:11px}
+.qr-cap{font-size:12.5px;color:var(--ink-text-2);margin-top:var(--s-3);line-height:1.6}
+.qr-cap b{color:#fff;font-weight:600;display:block;font-size:13.5px;margin-bottom:2px}
+
+/* ============================================================
+   6. 深色页脚
+   ============================================================ */
+.site-footer{background:var(--ink-950);color:var(--ink-text-2);padding:var(--s-9) 0 var(--s-6);font-size:13.5px}
+.foot-grid{display:grid;grid-template-columns:1.7fr 1fr 1fr;gap:var(--s-8);padding-bottom:var(--s-7)}
+.foot-brand .brand-name{color:#fff;font-size:17px}
+.foot-brand .brand-sub{color:var(--ink-text-3)}
+.foot-desc{margin-top:var(--s-4);line-height:1.9;max-width:30em;color:var(--ink-text-3)}
+.foot-h{font-size:12px;letter-spacing:.14em;color:var(--ink-text-3);text-transform:uppercase;margin-bottom:var(--s-4)}
+.foot-links{list-style:none;padding:0;display:grid;gap:var(--s-3)}
+.foot-links a{color:var(--ink-text-2);font-size:13.5px}
+.foot-links a:hover{color:#fff;text-decoration:underline;text-underline-offset:3px}
+.disclaimer{
+  border-top:1px solid rgba(255,255,255,.09);padding-top:var(--s-5);
+  font-size:12.5px;line-height:1.95;color:var(--ink-text-3);
+}
+.disclaimer b{color:var(--ink-text-2);font-weight:600;letter-spacing:.02em}
+.foot-bottom{
+  margin-top:var(--s-5);padding-top:var(--s-4);border-top:1px solid rgba(255,255,255,.07);
+  display:flex;justify-content:space-between;gap:var(--s-4);flex-wrap:wrap;
+  font-size:12.5px;color:#7C8A99;
+}
+
+/* ============================================================
+   7. 响应式：1280 / 1024 / 768 / 375
+   ============================================================ */
+@media (max-width:1023px){
+  .hdr{height:60px;gap:var(--s-4)}
+  .nav-burger{display:flex}
+  .site-nav{
+    display:none;position:absolute;top:100%;left:0;right:0;z-index:20;
+    flex-direction:column;align-items:stretch;gap:0;margin:0;padding:var(--s-2) 12px var(--s-3);
+    background:var(--ink-800);border-bottom:1px solid rgba(255,255,255,.1);
+    box-shadow:0 12px 24px rgba(0,0,0,.28);
+  }
+  .nav-check:checked ~ .site-nav{display:flex}
+  .site-nav a{padding:12px 10px;font-size:15px;border-radius:var(--r-sm)}
+  .site-nav a[aria-current="page"]::after{display:none}
+  .site-nav a[aria-current="page"]{color:#fff;background:rgba(168,44,44,.18)}
+  .nav-cta{margin:var(--s-2) 0 0 !important;text-align:center}
+  .nav-check:checked ~ .nav-burger span:nth-child(1){transform:translateY(5.5px) rotate(45deg)}
+  .nav-check:checked ~ .nav-burger span:nth-child(2){opacity:0}
+  .nav-check:checked ~ .nav-burger span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg)}
+
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cta-inner{grid-template-columns:minmax(0,1fr) 180px;gap:var(--s-6)}
+  .foot-grid{grid-template-columns:1.4fr 1fr 1fr;gap:var(--s-6)}
+}
+@media (max-width:767px){
+  :root{--fs-h1:24px;--fs-h2:18px;--fs-body:15.5px}
+  .container{padding:0 18px}
+  main{padding:var(--s-6) 0 var(--s-8)}
+  .section{margin-top:var(--s-7)}
+
+  .lead-card{padding:var(--s-5)} 
+  .lead-title{font-size:22px;line-height:1.5;margin:var(--s-3) 0 var(--s-2)}
+  .lead-excerpt{font-size:14.5px;margin-bottom:var(--s-4);
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .quote-strip{gap:var(--s-2) var(--s-4);margin-bottom:var(--s-4)}
+  .quote{font-size:12.5px}
+  .quote-chg{font-size:12px}
+  .lead-foot{gap:var(--s-3)}
+
+  .row{grid-template-columns:minmax(0,1fr) 64px;gap:var(--s-3);padding:var(--s-4) var(--s-5)}
+  .row-date{grid-column:1 / -1;padding:0;display:flex;gap:8px;align-items:baseline}
+  .row-date b{display:inline}
+  .row-title{font-size:15.5px}
+  .row-excerpt{-webkit-line-clamp:2}
+  .row-len{padding-top:2px}
+
+  .grid-4{grid-template-columns:minmax(0,1fr);gap:var(--s-3)}
+  .kcard{padding:var(--s-4) var(--s-5)}
+  .grid-2-3{grid-template-columns:minmax(0,1fr);gap:var(--s-4)}
+  .panel{padding:var(--s-4) var(--s-5)}
+
+  .cta-inner{grid-template-columns:minmax(0,1fr);gap:var(--s-6);padding:var(--s-7) 0;justify-items:start}
+  .qr{width:148px;height:148px}
+  .qr-box{text-align:left}
+
+  .foot-grid{grid-template-columns:1fr 1fr;gap:var(--s-6)}
+  .foot-brand{grid-column:1 / -1}
+  .site-footer{padding:var(--s-7) 0 var(--s-5)}
+  .foot-bottom{flex-direction:column;gap:var(--s-2)}
+}
+@media (max-width:400px){
+  .brand-sub{display:none}
+  .lead-title{font-size:20.5px}
+  .row{grid-template-columns:minmax(0,1fr);gap:6px}
+  .row-len{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== 深色头部 ===================== -->
+<header class="site-header">
+  <div class="container hdr">
+    <a class="brand" href="./">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span>
+        <span class="brand-name">十优缠论</span>
+        <span class="brand-sub">缠论结构 · 每日复盘 · 一起看图</span>
+      </span>
+    </a>
+
+    <input class="nav-check" type="checkbox" id="navToggle" />
+    <label class="nav-burger" for="navToggle" aria-label="展开导航菜单">
+      <span></span><span></span><span></span>
+    </label>
+
+    <nav class="site-nav" aria-label="主导航">
+      <a href="#" aria-current="page">缠论知识</a>
+      <a href="#">每日复盘</a>
+      <a href="#">消息解读</a>
+      <a class="nav-cta" href="#cta">社群</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+
+    <!-- ===================== 首屏：今日复盘 + 入门入口 ===================== -->
+    <section class="hero" aria-labelledby="heroTitle">
+
+      <article class="lead-card">
+        <div class="eyebrow">
+          <span class="tag">收盘复盘</span>
+          <span class="tnum">2026 年 11 月 17 日 · 周二</span>
+          <span>16:30 发布</span>
+        </div>
+
+        <h1 class="lead-title" id="heroTitle">
+          <a href="#">11月17日收盘复盘：缩量回踩年线，日线中枢扩张未走完</a>
+        </h1>
+
+        <p class="lead-excerpt">
+          上证指数全天窄幅整理，最低 3,356.9 点触及年线后收回，成交额缩至 8,142 亿。30 分钟级别两次向下试探都没有跌破中枢下沿，说明这一段扩张还没有走完。明天的关键，在于 3,360 一线能不能守住、并且有量能配合。
+        </p>
+
+        <div class="quote-strip tnum">
+          <span class="quote"><span class="quote-name">上证</span><span class="quote-val">3,388.42</span><span class="quote-chg is-down">−21.36 −0.63%</span></span>
+          <span class="quote"><span class="quote-name">深成</span><span class="quote-val">10,842.71</span><span class="quote-chg is-down">−98.63 −0.90%</span></span>
+          <span class="quote"><span class="quote-name">创业板</span><span class="quote-val">2,196.44</span><span class="quote-chg is-down">−27.52 −1.24%</span></span>
+          <span class="quote"><span class="quote-name">两市成交</span><span class="quote-val">8,142 亿</span><span class="quote-chg is-down">−11.3%</span></span>
+        </div>
+
+        <div class="lead-foot">
+          <span class="meta">
+            <span>约 6 分钟</span><span class="dot">·</span><span>1,842 字</span>
+            <span class="dot">·</span><span>文 / 十优</span>
+          </span>
+          <a class="more-link" href="#">读完整复盘 <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <aside class="entry-card" aria-labelledby="entryTitle">
+        <span class="entry-kicker">缠论入门</span>
+        <h2 class="entry-title" id="entryTitle">
+          <a href="#">第 1 讲：什么是「笔」——从一根 K 线到一段趋势</a>
+        </h2>
+        <p class="entry-desc">
+          缠论里所有的级别、中枢、买卖点，都是从「笔」开始搭的。这一讲先把笔的成立条件讲清楚，再解释为什么它决定了后面所有判断的精度。
+        </p>
+
+        <div class="progress-block">
+          <div class="progress-head tnum"><span>学习进度</span><span><b>3</b> / 18 讲</span></div>
+          <div class="progress-bar" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="18" aria-label="缠论知识体系学习进度"><i></i></div>
+        </div>
+
+        <div class="entry-foot">
+          <span>共 18 讲 · 已全部更新</span>
+          <a class="entry-cta" href="#">从第 1 讲开始 →</a>
+        </div>
+      </aside>
+
+    </section>
+
+    <!-- ===================== 今日复盘 ===================== -->
+    <section class="section" aria-labelledby="reviewTitle">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" id="reviewTitle">每日复盘</h2>
+          <p class="sec-note">每个交易日 16:30 更新 · 只写结构，不给结论</p>
+        </div>
+        <a class="sec-link" href="#">全部复盘 →</a>
+      </div>
+
+      <div class="list-card">
+        <div class="row">
+          <div class="row-date tnum"><b>11 / 17</b>周二</div>
+          <div>
+            <h3 class="row-title"><a href="#">缩量回踩年线，日线中枢扩张未走完</a></h3>
+            <p class="row-excerpt">最低 3,356.9 点触及年线后收回，30 分钟级别两次向下试探均未跌破中枢下沿 3,360。</p>
+          </div>
+          <div class="row-len tnum">6 分钟</div>
+        </div>
+
+        <div class="row">
+          <div class="row-date tnum"><b>11 / 16</b>周一</div>
+          <div>
+            <h3 class="row-title"><a href="#">权重护盘，指数在 3,400 关口反复换手</a></h3>
+            <p class="row-excerpt">上证 50 相对抗跌，但小盘股回落，指数与个股结构出现明显分化，这种分化本身就是信号。</p>
+          </div>
+          <div class="row-len tnum">5 分钟</div>
+        </div>
+
+        <div class="row">
+          <div class="row-date tnum"><b>11 / 13</b>周五</div>
+          <div>
+            <h3 class="row-title"><a href="#">周线收出长下影，中枢上沿第一次被有效测试</a></h3>
+            <p class="row-excerpt">3,420 附近的压力第一次被真正打了一次，回抽不破是偏强的表述，但需要下一周的确认。</p>
+          </div>
+          <div class="row-len tnum">7 分钟</div>
+        </div>
+
+        <div class="row">
+          <div class="row-date tnum"><b>11 / 12</b>周四</div>
+          <div>
+            <h3 class="row-title"><a href="#">消息面平静的一天，缩量下的结构更值得看</a></h3>
+            <p class="row-excerpt">没有增量消息时，价格行为最接近「纯结构」状态，这种日子适合练级别判断。</p>
+          </div>
+          <div class="row-len tnum">5 分钟</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 缠论知识体系 ===================== -->
+    <section class="section" aria-labelledby="learnTitle">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" id="learnTitle">缠论知识体系</h2>
+          <p class="sec-note">18 篇，按顺序读，四个月能搭起完整框架</p>
+        </div>
+        <a class="sec-link" href="#">体系目录 →</a>
+      </div>
+
+      <div class="grid-4">
+        <article class="kcard">
+          <span class="kcard-no tnum">01</span>
+          <h3 class="kcard-title"><a href="#">基础概念</a></h3>
+          <p class="kcard-desc">从 K 线包含处理讲到分型，把最容易被跳过、也最容易出错的那些基本功补上。</p>
+          <div class="kcard-foot">
+            <span><b>5</b> 篇</span>
+            <a class="kcard-first" href="#">K 线包含关系处理 →</a>
+          </div>
+        </article>
+
+        <article class="kcard">
+          <span class="kcard-no tnum">02</span>
+          <h3 class="kcard-title"><a href="#">笔与线段</a></h3>
+          <p class="kcard-desc">一笔要几根 K 线才成立、老笔新笔差在哪、线段划分在实战里怎么简化。</p>
+          <div class="kcard-foot">
+            <span><b>4</b> 篇</span>
+            <a class="kcard-first" href="#">一笔的成立条件 →</a>
+          </div>
+        </article>
+
+        <article class="kcard">
+          <span class="kcard-no tnum">03</span>
+          <h3 class="kcard-title"><a href="#">中枢与背驰</a></h3>
+          <p class="kcard-desc">三种中枢形态与级别归属，背驰的两种判断方式，以及最容易误判的地方。</p>
+          <div class="kcard-foot">
+            <span><b>5</b> 篇</span>
+            <a class="kcard-first" href="#">什么是中枢 →</a>
+          </div>
+        </article>
+
+        <article class="kcard">
+          <span class="kcard-no tnum">04</span>
+          <h3 class="kcard-title"><a href="#">买卖点与实战</a></h3>
+          <p class="kcard-desc">一二三类买点的位置关系、彼此的区别，以及每个买点必须写清的失效条件。</p>
+          <div class="kcard-foot">
+            <span><b>4</b> 篇</span>
+            <a class="kcard-first" href="#">一类买点为什么难拿 →</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===================== 消息解读 / 结构案例 ===================== -->
+    <section class="section" aria-label="消息解读与结构案例">
+      <div class="grid-2-3">
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2 class="panel-title">消息面解读</h2>
+            <a class="sec-link" href="#">更多 →</a>
+          </div>
+          <ul class="mini">
+            <li>
+              <span class="mini-date tnum">2026-11-17</span>
+              <h3 class="mini-title"><a href="#">降准落地后的第一个交易日，资金为什么没买账</a></h3>
+              <p class="mini-desc">流动性宽松是背景，不是买点。缺口回补与量能萎缩同时出现时，结构往往比消息更早给出答案。</p>
+            </li>
+            <li>
+              <span class="mini-date tnum">2026-11-14</span>
+              <h3 class="mini-title"><a href="#">三季报披露收官：业绩不及预期集中在哪两个方向</a></h3>
+              <p class="mini-desc">把已披露的口径统一之后，行业之间的差异比总量更值得关注，尤其是价格已经在低位的板块。</p>
+            </li>
+            <li>
+              <span class="mini-date tnum">2026-11-11</span>
+              <h3 class="mini-title"><a href="#">出口数据超预期，为什么只有一条产业链有反应</a></h3>
+              <p class="mini-desc">同样的数据，不同位置的结构对它的反应不一样。这次反应迟钝并不代表数据无效。</p>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 结构案例：按标签聚合的复盘文章，非独立栏目。
+             渲染规则：≥3 篇渲染 3 条；不足 3 篇整块不渲染；不出现"查看更多" -->
+        <div class="panel">
+          <div class="panel-head">
+            <h2 class="panel-title panel-title--navy">结构案例</h2>
+          </div>
+          <p class="panel-sub">复盘中的个股结构拆解</p>
+          <ul class="mini">
+            <li>
+              <span class="mini-date tnum">2026-11-17</span>
+              <h3 class="mini-title"><a href="#">某白酒龙头：周线中枢上沿反复测试的结构含义</a></h3>
+              <p class="mini-desc">第三次测试上沿的同时量能递减，这里讨论的是「能不能过去」，而不是「应该买还是卖」。</p>
+              <div class="mini-tags"><span class="chip">周线</span><span class="chip">中枢上沿</span><span class="chip">量能背离</span></div>
+            </li>
+            <li>
+              <span class="mini-date tnum">2026-11-14</span>
+              <h3 class="mini-title"><a href="#">某光伏设备：日线三类买点成立后的第一次回抽</a></h3>
+              <p class="mini-desc">回抽不进入中枢是强，进入中枢就说明级别判断需要往下调整一档。文中给出三个观察位。</p>
+              <div class="mini-tags"><span class="chip">日线</span><span class="chip">三类买点</span></div>
+            </li>
+            <li>
+              <span class="mini-date tnum">2026-11-12</span>
+              <h3 class="mini-title"><a href="#">某券商股：30 分钟级别一段下跌笔结束的三个信号</a></h3>
+              <p class="mini-desc">底分型、量能、次级别回抽不破，三个条件得同时满足才算数，缺一个就只能算「疑似」。</p>
+              <div class="mini-tags"><span class="chip">30 分钟</span><span class="chip">笔的结束</span></div>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- ===================== 公众号 CTA ===================== -->
+<section class="cta-band ink" id="cta" aria-labelledby="ctaTitle">
+  <div class="container cta-inner">
+    <div>
+      <p class="cta-kicker">公众号</p>
+      <h2 class="cta-title" id="ctaTitle">每个交易日 16:30，一篇看得懂的收盘复盘</h2>
+      <p class="cta-desc">
+        站内文章会持续更新，但复盘推送、周度长文和读者提问的回复，都只在公众号里发。如果你也在认真看结构，这里会更适合你。
+      </p>
+      <ul class="cta-points">
+        <li><span><b>只讲结构，不给结论</b>——位置、级别、失效条件写清楚，判断留给你自己。</span></li>
+        <li><span><b>交易日每天一篇复盘</b>，每周一篇知识长文，不追热点、不做标题党。</span></li>
+        <li><span><b>交流群入口在公众号内推送</b>，群里只聊结构和方法，不聊个股。</span></li>
+      </ul>
+      <p class="cta-note">交流群用微信群，二维码有效期 7 天，所以站内不挂群码，统一在公众号里回复关键词获取。</p>
+    </div>
+
+    <div class="qr-box">
+      <div class="qr"><div class="qr-inner" role="img" aria-label="微信公众号二维码占位图（正式版将替换为真实二维码图片）"></div></div>
+      <p class="qr-cap"><b>微信扫码关注「十优缠论」</b>回复「入群」获取交流群入口</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 深色页脚 ===================== -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="brand" href="./" style="color:#fff">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>
+            <span class="brand-name">十优缠论</span>
+            <span class="brand-sub">缠论结构 · 每日复盘 · 一起看图</span>
+          </span>
+        </a>
+        <p class="foot-desc">一个只做缠论技术分析记录的小站。不荐股、不带单、不承诺收益，只把结构怎么读、级别怎么定、判断错在哪写清楚。</p>
+      </div>
+
+      <nav aria-labelledby="footNav1">
+        <h2 class="foot-h" id="footNav1">内容</h2>
+        <ul class="foot-links">
+          <li><a href="#">缠论知识体系</a></li>
+          <li><a href="#">每日复盘</a></li>
+          <li><a href="#">消息解读</a></li>
+          <li><a href="#">结构案例</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-labelledby="footNav2">
+        <h2 class="foot-h" id="footNav2">关于</h2>
+        <ul class="foot-links">
+          <li><a href="#">关于本站</a></li>
+          <li><a href="#">写作原则</a></li>
+          <li><a href="#">免责声明</a></li>
+          <li><a href="#">关注公众号</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="disclaimer">
+      <b>免责声明</b>
+      <p style="margin:8px 0 0">本站内容为缠论技术分析方法的学习与交流记录，不构成任何投资建议，也不构成对任何证券的买卖要约、推荐或收益承诺。文中出现的指数点位、个股与结构分析，仅用于说明技术判断的推导方式，不代表对未来走势的预测。技术分析本身存在失效概率，任何依据本站内容作出的决策，风险与后果由决策者本人承担。市场有风险，投资需谨慎。</p>
+    </div>
+
+    <div class="foot-bottom">
+      <span>© 2026 十优缠论 · 内容转载请保留出处与原文链接</span>
+      <span>本站为纯静态页面，不使用 Cookie，不追踪访问者</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
