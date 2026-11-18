@@ -91,11 +91,13 @@ const hasQrImage = fs.existsSync(qrPath);
   }
 
   .cta-qr img {
+    /* 公众号后台导出的图静默区偏窄（约 2 个模块，规范要 4 个），
+       这里用白色 padding 补足，比改源图安全，也比扫描失败便宜。 */
     width: 132px;
     height: 132px;
     border-radius: var(--r-sm);
     background: #fff;
-    padding: 6px;
+    padding: 12px;
   }
 
   .qr-placeholder {
